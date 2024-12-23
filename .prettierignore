@@ -1,0 +1,10 @@
+*.svg
+*.png
+*.jpg
+*.md
+*.sh
+*.ps1
+dist/
+node_modules/
+Dockerfile
+.dockerignore
