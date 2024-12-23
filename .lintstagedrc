@@ -1,0 +1,6 @@
+{
+  "src/**/*.{js,jsx,ts,tsx}": [
+    "pnpm run lint:fix:staged --",
+    "pnpm run format:fix:staged --"
+  ]
+}

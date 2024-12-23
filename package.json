@@ -7,11 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "eslint --fix .",
+    "lint:fix:staged": "eslint --fix",
     "format": "prettier --list-different .",
     "format:fix": "prettier --list-different --write .",
-    "format:fix:specific": "prettier --list-different --write",
+    "format:fix:staged": "prettier --list-different --write",
     "preview": "vite preview",
+    "prepare": "husky",
+    "hook:pre-commit": "lint-staged",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "ts:check": "tsc --noEmit"
@@ -38,6 +41,8 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "eslint-plugin-storybook": "^0.11.1",
     "globals": "^15.13.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
     "prettier": "^3.4.2",
     "storybook": "^8.4.7",
     "typescript": "~5.6.2",
@@ -51,9 +56,8 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write --ignore-unknown",
-      "git add"
+      "pnpm run lint:fix:staged --",
+      "pnpm run format:fix:staged --"
     ]
   }
 }
