@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 *storybook.log
+
+# Vitest
+**/__snapshots__/
+artifacts/*
