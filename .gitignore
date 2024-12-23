@@ -28,3 +28,7 @@ dist-ssr
 # Vitest
 **/__snapshots__/
 artifacts/*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

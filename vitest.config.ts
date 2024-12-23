@@ -9,7 +9,7 @@ export default defineConfig({
       VITE_API_BASE_URL: "http://localhost:3001/api",
     },
     globals: true,
-    exclude: ["node_modules"],
+    exclude: ["e2e", "node_modules"],
     reporters: ["default", "junit"],
     outputFile: "artifacts/test-results.xml",
   },
