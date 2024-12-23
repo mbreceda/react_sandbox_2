@@ -12,6 +12,7 @@
     "format": "prettier --list-different .",
     "format:fix": "prettier --list-different --write .",
     "format:fix:staged": "prettier --list-different --write",
+    "format:check": "prettier --check .",
     "preview": "vite preview",
     "prepare": "husky",
     "hook:pre-commit": "lint-staged",
