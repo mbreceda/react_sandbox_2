@@ -10,13 +10,25 @@ import {
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme";
 
-import App from "./App";
 import NotFound from "./pages/NotFound/NotFound";
+import { LoadingLayout } from "./components/LoadingLayout";
+import RootLayout from "./pages/RootLayout/Layout";
+import { loaders } from "./pages/RootLayout/loaders";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<App />} />,
+      <Route
+        path="/"
+        element={
+          <LoadingLayout>
+            <RootLayout />
+          </LoadingLayout>
+        }
+        loader={loaders.layoutLoader}
+        id="root-loader"
+      />
+      ,
       <Route path="notfound" element={<NotFound />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </>,
