@@ -12,5 +12,6 @@ export default defineConfig({
     exclude: ["e2e", "node_modules"],
     reporters: ["default", "junit"],
     outputFile: "artifacts/test-results.xml",
+    setupFiles: ["./src/setupTests.ts"],
   },
 });
