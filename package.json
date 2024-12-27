@@ -23,9 +23,11 @@
     "hook:pre-commit": "lint-staged",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "tsc --noEmit",
+    "tan": "tsr generate"
   },
   "dependencies": {
+    "@tanstack/react-router": "^1.92.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -40,6 +42,9 @@
     "@storybook/react": "^8.4.7",
     "@storybook/react-vite": "^8.4.7",
     "@storybook/test": "^8.4.7",
+    "@tanstack/eslint-plugin-router": "^1.92.7",
+    "@tanstack/router-devtools": "^1.92.3",
+    "@tanstack/router-plugin": "^1.91.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.2",
