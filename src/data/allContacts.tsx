@@ -6,7 +6,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "alice_smith",
     notes: "Loves cats",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "charlie_brown",
     notes: "Avid reader",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 4,
@@ -42,7 +42,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "eve_davis",
     notes: "Loves painting",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 6,
@@ -60,7 +60,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "grace_wilson",
     notes: "Yoga practitioner",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 8,
@@ -78,7 +78,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "ivan_taylor",
     notes: "Guitar player",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 10,
@@ -96,7 +96,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "kevin_thomas",
     notes: "Movie buff",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 12,
@@ -114,7 +114,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "mallory_white",
     notes: "Enjoys cycling",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 14,
@@ -132,7 +132,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "oscar_martin",
     notes: "Loves fishing",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 16,
@@ -150,7 +150,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "quentin_garcia",
     notes: "Loves coding",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 18,
@@ -168,7 +168,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "sybil_robinson",
     notes: "Loves baking",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 20,
@@ -186,7 +186,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "ursula_rodriguez",
     notes: "Loves dancing",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 22,
@@ -204,7 +204,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "walter_lee",
     notes: "Loves chess",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 24,
@@ -222,7 +222,7 @@ export const allContacts = [
     avatar: "https://placecats.com/200/200",
     twitter: "yvonne_hall",
     notes: "Loves reading",
-    favorite: true,
+    favorite: false,
   },
   {
     id: 26,

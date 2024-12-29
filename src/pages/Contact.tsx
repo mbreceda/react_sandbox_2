@@ -1,4 +1,4 @@
-import { Form } from "react-router-dom";
+import { Form, useLoaderData } from "react-router-dom";
 
 export interface ContactRecord {
   id: number;
@@ -9,17 +9,9 @@ export interface ContactRecord {
   notes: string;
   favorite: boolean;
 }
-
-const contact = {
-  first: "Your",
-  last: "Name",
-  avatar: "https://placecats.com/200/200",
-  twitter: "your_handle",
-  notes: "Some notes",
-  favorite: true,
-};
-
 export default function Contact() {
+  const { contact } = useLoaderData() as { contact: ContactRecord };
+
   return (
     <div className="max-full rounded overflow-hidden p-4 bg-white flex flex-row justify-center">
       <div className="flex justify-center mr-6">
