@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react"; // Adjust the import path as necessary
-import { useLoaderData, Form } from "react-router-dom";
+import { useLoaderData, Form, useNavigation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Search from "./components/Search";
 import ContactList from "./components/ContactList";
 import { ContactRecord } from "./pages/Contact";
 
 function Root() {
+  const navigate = useNavigation();
   const { allContacts } = useLoaderData() as {
     allContacts: ContactRecord[];
   };
@@ -40,6 +41,9 @@ function Root() {
         <ContactList contacts={contacts} />
       </aside>
       <main className="flex-1 p-4 overflow-y-auto">
+        {navigate.state === "loading" && (
+          <div className="absolute inset-0 bg-gray-500 opacity-50 z-50 w-fill left-px"></div>
+        )}
         <Outlet />
       </main>
     </div>

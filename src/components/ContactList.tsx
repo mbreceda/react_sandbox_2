@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { ContactRecord } from "../pages/Contact";
 
 export default function ContactList({
@@ -12,9 +12,13 @@ export default function ContactList({
         <ul className="mb-4 mt-2 overflow-y-auto max-h-[calc(100vh-100px)] scrollbar-thin">
           {contacts.map((contact) => (
             <li key={contact.id}>
-              <Link
+              <NavLink
                 to={`/contacts/${contact.id}`}
-                className="p-2 border-b border-gray-200 block hover:bg-gray-100"
+                className={({ isActive, isPending }) =>
+                  `p-2 border-b border-gray-200 block hover:bg-gray-100 hover:text-blue-500 ${
+                    isActive ? "bg-blue-100" : ""
+                  } ${isPending ? "opacity-50" : ""}`
+                }
               >
                 {contact.first || contact.last ? (
                   <span className="mr-2">
@@ -24,7 +28,7 @@ export default function ContactList({
                   <i>No Name</i>
                 )}
                 {contact.favorite ? "⭐️" : null}
-              </Link>
+              </NavLink>
             </li>
           ))}
         </ul>
