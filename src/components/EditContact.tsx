@@ -17,7 +17,8 @@ export default function EditContact() {
           name="first"
           type="text"
           defaultValue={contact.first}
-          className="w-3/6 p-2 border"
+          className="w-3/6 p-2 border rounded"
+          placeholder="First"
         />
         <span className="mx-2"> </span>
         <input
@@ -25,7 +26,8 @@ export default function EditContact() {
           name="last"
           type="text"
           defaultValue={contact.last}
-          className="w-3/6 p-2 border"
+          className="w-3/6 p-2 border rounded"
+          placeholder="Last"
         />
       </div>
       <div className="flex items-center mb-4">
@@ -37,7 +39,8 @@ export default function EditContact() {
           name="avatar"
           type="text"
           defaultValue={contact.avatar}
-          className="w-full p-2 border"
+          className="w-full p-2 border rounded"
+          placeholder="URL"
         />
       </div>
       <div className="flex items-center mb-4">
@@ -49,7 +52,8 @@ export default function EditContact() {
           name="twitter"
           type="text"
           defaultValue={contact.twitter}
-          className="w-full p-2 border"
+          className="w-full p-2 border rounded"
+          placeholder="@username"
         />
       </div>
       <div className="flex items-center mb-4">
@@ -60,7 +64,7 @@ export default function EditContact() {
           id="notes"
           name="notes"
           defaultValue={contact.notes}
-          className="w-full p-2 border"
+          className="w-full p-2 border rounded"
         />
       </div>
       {/* <div className="flex items-center mb-4">

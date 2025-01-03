@@ -4,7 +4,6 @@ import {
   redirect,
 } from "react-router-dom";
 import { allContacts } from "../data/allContacts";
-import { ContactRecord } from "../pages/Contact";
 
 export const contactsLoader = async () => {
   new Promise((resolve) => setTimeout(resolve, 1000));
@@ -23,22 +22,20 @@ export const contactLoader = async ({ params }: LoaderFunctionArgs) => {
   return { contact };
 };
 
-export const createContactAction = async ({
-  request,
-}: ActionFunctionArgs): Promise<ContactRecord> => {
+export const createContactAction = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  const formData = await request.formData();
+
   const contact = {
     id: allContacts.length + 1,
-    first: formData.get("first") as string,
-    last: formData.get("last") as string,
-    avatar: formData.get("avatar") as string,
-    twitter: formData.get("twitter") as string,
-    favorite: formData.get("favorite") === "on",
-    notes: "Loves cats",
+    first: "",
+    last: "",
+    avatar: "",
+    twitter: "",
+    favorite: false,
+    notes: "",
   };
   allContacts.push(contact);
-  return contact;
+  return redirect(`/contacts/${contact.id}/edit`);
 };
 
 export const editContactAction = async ({

@@ -15,12 +15,20 @@ export default function Contact() {
   return (
     <div className="max-full rounded overflow-hidden p-4 bg-white flex flex-row justify-center">
       <div className="flex justify-center mr-6">
-        <img
-          className="rounded-3xl"
-          alt={`${contact.first} ${contact.last} avatar`}
-          key={contact.avatar}
-          src={contact.avatar}
-        />
+        {contact.avatar ? (
+          <img
+            className="rounded-3xl"
+            alt={`${contact.first} ${contact.last} avatar`}
+            key={contact.avatar}
+            src={contact.avatar}
+          />
+        ) : (
+          <div className="rounded-3xl bg-gray-300 flex items-center justify-center w-48 h-48">
+            <div className="rounded-3xl bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500">No Avatar</span>
+            </div>
+          </div>
+        )}
       </div>
       <div className="text-left">
         <div>
