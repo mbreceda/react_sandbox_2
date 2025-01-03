@@ -5,9 +5,14 @@ import {
 } from "react-router-dom";
 import { allContacts } from "../data/allContacts";
 
-export const contactsLoader = async () => {
+export const contactsLoader = async ({ request }: LoaderFunctionArgs) => {
   new Promise((resolve) => setTimeout(resolve, 1000));
-  return { allContacts };
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q") || "";
+  const contacts = allContacts.filter((contact) =>
+    `${contact.first} ${contact.last}`.toLowerCase().includes(q.toLowerCase()),
+  );
+  return { contacts, q };
 };
 
 export const contactLoader = async ({ params }: LoaderFunctionArgs) => {

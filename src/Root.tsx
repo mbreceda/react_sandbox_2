@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react"; // Adjust the import path as necessary
 import { useLoaderData, Form, useNavigation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Search from "./components/Search";
@@ -7,28 +6,17 @@ import { ContactRecord } from "./pages/Contact";
 
 function Root() {
   const navigate = useNavigation();
-  const { allContacts } = useLoaderData() as {
-    allContacts: ContactRecord[];
+  const { contacts } = useLoaderData() as {
+    contacts: ContactRecord[];
   };
-  const [contacts, setContacts] = useState(allContacts);
 
-  const handleSearch = useCallback(
-    (text: string) => {
-      const filteredContacts = allContacts.filter((contact) =>
-        `${contact.first} ${contact}`
-          .toLowerCase()
-          .includes(text.toLowerCase()),
-      );
-      setContacts(filteredContacts);
-    },
-    [allContacts],
-  );
+  console.log(navigate);
 
   return (
     <div className="flex h-screen">
       <aside className="w-fit bg-gray-100 p-4">
         <div className="flex justify-between mb-4">
-          <Search onChange={handleSearch} />
+          <Search />
           <Form method="post">
             <button
               type="submit"
