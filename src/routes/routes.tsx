@@ -11,6 +11,7 @@ import {
   destroyContactAction,
 } from "../loaders/rootLoaders";
 import ErrorPage from "../pages/ErrorPage";
+import Index from "../pages/Index";
 
 const routes: RouteObject[] = [
   {
@@ -20,6 +21,7 @@ const routes: RouteObject[] = [
     action: createContactAction,
     errorElement: <ErrorPage />,
     children: [
+      { index: true, element: <Index /> },
       {
         path: "/contacts/:contactId",
         element: <Contact />,
