@@ -77,3 +77,17 @@ export const destroyContactAction = async ({ params }: ActionFunctionArgs) => {
   allContacts.splice(contactId - 1, 1);
   return redirect("/");
 };
+
+export const setContactFavoriteAction = async ({
+  request,
+  params,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const updates = Object.fromEntries(formData);
+  const contactId = Number(params.contactId as string);
+  const contact = allContacts.find((contact) => contact.id === contactId);
+  if (!contact) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  contact.favorite = Boolean(updates.favorite);
+};

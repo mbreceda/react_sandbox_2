@@ -9,6 +9,7 @@ import {
   createContactAction,
   editContactAction,
   destroyContactAction,
+  setContactFavoriteAction,
 } from "../loaders/rootLoaders";
 import ErrorPage from "../pages/ErrorPage";
 import Index from "../pages/Index";
@@ -26,6 +27,7 @@ const routes: RouteObject[] = [
         path: "/contacts/:contactId",
         element: <Contact />,
         loader: contactLoader,
+        action: setContactFavoriteAction,
       },
       {
         path: "/contacts/:contactId/edit",

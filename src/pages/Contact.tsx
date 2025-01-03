@@ -1,4 +1,4 @@
-import { Form, useLoaderData } from "react-router-dom";
+import { Form, useLoaderData, useFetcher } from "react-router-dom";
 
 export interface ContactRecord {
   id: number;
@@ -92,8 +92,10 @@ export default function Contact() {
 
 function Favorite({ contact }: { contact: Pick<ContactRecord, "favorite"> }) {
   const favorite = contact.favorite;
+  const fetcher = useFetcher();
+
   return (
-    <Form method="post">
+    <fetcher.Form method="post">
       <button
         aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
         name="favorite"
@@ -102,6 +104,6 @@ function Favorite({ contact }: { contact: Pick<ContactRecord, "favorite"> }) {
       >
         {favorite ? "★" : "☆"}
       </button>
-    </Form>
+    </fetcher.Form>
   );
 }
