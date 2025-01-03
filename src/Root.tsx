@@ -10,8 +10,6 @@ function Root() {
     contacts: ContactRecord[];
   };
 
-  console.log(navigate);
-
   return (
     <div className="flex h-screen">
       <aside className="w-fit bg-gray-100 p-4">
