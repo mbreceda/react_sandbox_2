@@ -8,6 +8,7 @@ import {
   contactLoader,
   createContactAction,
   editContactAction,
+  destroyContactAction,
 } from "../loaders/rootLoaders";
 import ErrorPage from "../pages/ErrorPage";
 
@@ -29,6 +30,11 @@ const routes: RouteObject[] = [
         element: <EditContact />,
         loader: contactLoader,
         action: editContactAction,
+      },
+      {
+        path: "/contacts/:contactId/destroy",
+        action: destroyContactAction,
+        errorElement: <div>Oops! there was an error.</div>,
       },
     ],
   },

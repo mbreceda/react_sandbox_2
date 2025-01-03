@@ -61,3 +61,14 @@ export const editContactAction = async ({
 
   return redirect(`/contacts/${contactId}`);
 };
+
+export const destroyContactAction = async ({ params }: ActionFunctionArgs) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const contactId = Number(params.contactId as string);
+  const contact = allContacts.find((contact) => contact.id === contactId);
+  if (!contact) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  allContacts.splice(contactId - 1, 1);
+  return redirect("/");
+};
