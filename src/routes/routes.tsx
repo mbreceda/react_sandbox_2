@@ -22,23 +22,28 @@ const routes: RouteObject[] = [
     action: createContactAction,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Index /> },
       {
-        path: "/contacts/:contactId",
-        element: <Contact />,
-        loader: contactLoader,
-        action: setContactFavoriteAction,
-      },
-      {
-        path: "/contacts/:contactId/edit",
-        element: <EditContact />,
-        loader: contactLoader,
-        action: editContactAction,
-      },
-      {
-        path: "/contacts/:contactId/destroy",
-        action: destroyContactAction,
-        errorElement: <div>Oops! there was an error.</div>,
+        errorElement: <ErrorPage />,
+        children: [
+          { index: true, element: <Index /> },
+          {
+            path: "/contacts/:contactId",
+            element: <Contact />,
+            loader: contactLoader,
+            action: setContactFavoriteAction,
+          },
+          {
+            path: "/contacts/:contactId/edit",
+            element: <EditContact />,
+            loader: contactLoader,
+            action: editContactAction,
+          },
+          {
+            path: "/contacts/:contactId/destroy",
+            action: destroyContactAction,
+            errorElement: <div>Oops! there was an error.</div>,
+          },
+        ],
       },
     ],
   },
