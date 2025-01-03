@@ -1,7 +1,8 @@
-import { Form, useLoaderData } from "react-router-dom";
+import { Form, useLoaderData, useNavigate } from "react-router-dom";
 import { ContactRecord } from "../pages/Contact";
 
 export default function EditContact() {
+  const navigate = useNavigate();
   const { contact } = useLoaderData() as {
     contact: ContactRecord;
   };
@@ -90,6 +91,9 @@ export default function EditContact() {
         <button
           type="button"
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => {
+            navigate(-1);
+          }}
         >
           Cancel
         </button>
