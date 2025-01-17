@@ -1,33 +1,93 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
+const twoFer = (person: string = 'you'): string => {
+  return `one for ${person}, one for me`;
+}
+
+const isLeapYear = (year: number): boolean => {
+  return (year % 4 === 0 && year % 100 !== 0)|| year % 400 === 0 
+}
+
+const printName = (name: { first: string, last: string }): string => {
+  return `${name.first} ${name.last}`
+}
+
+// Creating a primitive type
+type myNum = number;
+const myNum: myNum = 5;
+
+// Interception type
+type Circle = {
+  radius: number;
+}
+
+type Colorful = {
+  color: string;
+}
+
+type ColorfuelCircle = Circle & Colorful;
+
+const happyFace: ColorfuelCircle = {
+  radius: 42,
+  color: 'yellow'
+}
+
+// Union Types
+type Point = {
+  x: number;
+  y: number;
+}
+
+type Loc = {
+  lat: number;
+  long: number;
+}
+
+let coordinates: Point | Loc = { x: 12, y: 34 };
+coordinates = { lat: 12, long: 34 };
+
+// Type narrowing
+function calculateTax(price: number | string, tax: number): number { 
+  if (typeof price === 'string') {
+    price = parseFloat(price);
+  }
+  return price * tax;
+}
+
+// Union types and Arrays
+const stuff: (number | string)[] = [1, 'hello', 2, 'world'];
+
+// Literal types
+const literalTypes: 'foo' | 'bar' = 'foo';
+
+// Tuples
+const tuple: [number, number, string] = [1, 2, '3'];
+
 function App() {
-  const [count, setCount] = useState(0);
+
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {twoFer()}
+      <br />
+      {twoFer('Alice')}
+      <br />
+      {String(isLeapYear(2012))}
+      <br />
+      {String(isLeapYear(2013))}
+      <br />
+      {printName({ first: 'John', last: 'Doe' })}
+      <br />
+      <pre>{JSON.stringify(happyFace)}
+      </pre>
+      <pre>{JSON.stringify(coordinates)}</pre>
+      {calculateTax(10, 0.2)}
+      <br />
+      {stuff}
+      <br />
+      {literalTypes}
+      <br />
+      {tuple}
     </>
   );
 }
