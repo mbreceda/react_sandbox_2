@@ -12,5 +12,15 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  async viteFinal(config) {
+    const { mergeConfig } = await import("vite");
+    // Merge custom configuration into the default Vite config
+    return mergeConfig(config, {
+      // Add dependencies to pre-bundle
+      optimizeDeps: {
+        include: ["storybook-dark-mode"],
+      },
+    });
+  },
 };
 export default config;
