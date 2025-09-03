@@ -2,18 +2,28 @@ import os
 import textwrap
 from typing import Any, Dict, List, Optional, Tuple
 
-from __feature__ import annotations
-from mcp.server.fastmpc import FastMPC
+# Removed unsupported feature import
+from mcp.server.fastmcp import FastMCP
 
 import requests
 
-mcp = FastMPC("pr-summary-mcp")
+mcp = FastMCP("pr-summary-mcp")
 
 
 def _headers() -> Dict[str, str]:
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
-        raise ValueError("GITHUB_TOKEN is not set")
+        # Print debug info about available environment variables
+        available_env_keys = ", ".join(sorted(k for k in os.environ.keys() if "TOKEN" in k or "KEY" in k or "GITHUB" in k))
+        error_msg = f"GITHUB_TOKEN is not set. Available related env vars: {available_env_keys}"
+        print(error_msg)
+        # Try to use GH_TOKEN as fallback
+        token = os.environ.get("GH_TOKEN")
+        if not token:
+            raise ValueError("Neither GITHUB_TOKEN nor GH_TOKEN is set")
+        print("Using GH_TOKEN as fallback")
+        
+    print(f"Using GitHub token (first 4 chars): {token[:4]}..." if token else "No token found")
     return {
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {token}",
@@ -70,7 +80,7 @@ def _build_prompt(
 ) -> str:
     return textwrap.dedent(
         f"""
-        You are a seniro reviewer. Summarize the pull request below for busy reviewers.
+        You are a senior reviewer. Summarize the pull request below for busy reviewers.
         Return **Github-flavored Markdown** only.
     
         ### Output format
@@ -169,10 +179,27 @@ def summarize_pr(
     )
 
     # 4) Call Gemini (client picks up GEMINI_API_KEY from env per docs)
-    client = genai.Client()
-    model_name = gemini_model or os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
-    resp = client.models.generate_content(model=model_name, contents=prompt)
-    return resp.text or ""
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            return "Error: GEMINI_API_KEY environment variable is not set"
+
+        # Define model_name before using it
+        model_name = gemini_model or os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
+        print(f"Using Gemini model: {model_name}")
+        
+        client = genai.Client(api_key=api_key)
+        resp = client.models.generate_content(model=model_name, contents=prompt)
+
+        if not resp.text:
+            return "Error: Gemini returned empty response"
+
+        print(f"Received response from Gemini with {len(resp.text)} characters")
+        return resp.text
+    except Exception as e:
+        error_msg = f"Error calling Gemini API: {str(e)}"
+        print(error_msg)
+        return f"## Error generating summary\n\n{error_msg}"
 
 
 if __name__ == "__main__":
