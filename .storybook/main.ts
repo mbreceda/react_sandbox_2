@@ -1,7 +1,11 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const config: StorybookConfig = {
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: [
+    "./**/*.mdx",
+    "../src/**/*.mdx",
+    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+  ],
   addons: [
     "@storybook/addon-onboarding",
     "@storybook/addon-essentials",
@@ -18,12 +22,13 @@ const config: StorybookConfig = {
     return mergeConfig(config, {
       // Add dependencies to pre-bundle
       optimizeDeps: {
-        include: ["storybook-dark-mode"],
+        include: ["storybook-dark-mode", "@mdx-js/react"],
       },
       resolve: {
         alias: {
           // Add any aliases if needed
         },
+        dedupe: ["react", "react-dom", "@mdx-js/react"],
       },
       // Explicitly configure SVG handling
       assetsInclude: ["**/*.svg"],
