@@ -10,4 +10,6 @@ export default defineConfig({
       plugins: [tailwindcss()],
     },
   },
+  // Ensure proper handling of SVGs
+  assetsInclude: ["**/*.svg"],
 });

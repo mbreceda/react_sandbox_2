@@ -20,6 +20,13 @@ const config: StorybookConfig = {
       optimizeDeps: {
         include: ["storybook-dark-mode"],
       },
+      resolve: {
+        alias: {
+          // Add any aliases if needed
+        },
+      },
+      // Explicitly configure SVG handling
+      assetsInclude: ["**/*.svg"],
     });
   },
 };
