@@ -1,11 +1,14 @@
-import { createGlobalStyle, css } from "styled-components";
+import "react-multi-carousel/lib/styles.css";
+import { createGlobalStyle } from "styled-components";
 
 import { breakpoints } from "./breakpoints";
 import { resetCSS } from "./CSSReset";
-import "react-multi-carousel/lib/styles.css";
+import { lightTheme } from "./theme";
 
-export const GlobalStyle = createGlobalStyle(
-  ({ theme: { color } }) => css`
+// Using lightTheme's color directly since we removed the ThemeProvider
+const { color } = lightTheme;
+
+export const GlobalStyle = createGlobalStyle`
     ${resetCSS}
     // smooth light-dark mode transition
     * {
@@ -178,5 +181,4 @@ export const GlobalStyle = createGlobalStyle(
     .carousel-container {
       touch-action: pan-x;
     }
-  `,
-);
+`;
