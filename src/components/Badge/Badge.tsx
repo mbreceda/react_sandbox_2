@@ -1,10 +1,11 @@
 import styled, { css } from "styled-components";
+import { Body } from "../typography";
 
 const Container = styled.div(
-  ({ theme: { color } }) => css`
+  ({ theme: { color, borderRadius } }) => css`
     padding: 0.5em 1em;
-    background: ${color.badgeBackground}
-    border-radius: 1em;
+    background: ${color.badgeBackground};
+    border-radius: ${borderRadius.m};
     display: inline-block;
     span {
       color: ${color.badgeText};
@@ -22,6 +23,8 @@ type BadgeProps = {
 
 export const Badge = ({ text, className }: BadgeProps) => (
   <Container className={className}>
-    <span>{text}</span>
+    <Body type="span" size="S">
+      {text}
+    </Body>
   </Container>
 );

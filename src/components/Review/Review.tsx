@@ -1,6 +1,16 @@
+import styled from "styled-components";
+
+import { Body } from "../typography";
+
 type ReviewProps = {
   rating: number;
 };
+
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
 
 const getReview = (rating?: number) => {
   if (!rating) {
@@ -17,14 +27,13 @@ const getReview = (rating?: number) => {
     reviewText = "Excellent";
   }
 
-  return (
-    <>
-      <span style={{ color: "#FFD700", marginRight: 4 }}>★</span>
-      {rating.toFixed(1)} {reviewText}
-    </>
-  );
+  return `★ ${rating.toFixed(1)} ${reviewText}`;
 };
 
 export const Review = ({ rating }: ReviewProps) => (
-  <div>{getReview(rating)}</div>
+  <Wrapper>
+    <Body type="span" size="S" className="review-text">
+      {getReview(rating)}
+    </Body>
+  </Wrapper>
 );
