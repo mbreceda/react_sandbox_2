@@ -2,6 +2,7 @@ import type { Preview } from "@storybook/react";
 import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
 import { fn } from "@storybook/test";
 
+import { globalDecorators } from "./decorators";
 import { breakpoints } from "../src/styles/breakpoints";
 import "../src/index.css";
 
@@ -45,3 +46,4 @@ const preview: Preview = {
 };
 
 export default preview;
+export const decorators = globalDecorators;
