@@ -1,77 +1,67 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
+import { useCountdownContext } from "./useCountdownContext";
 
 /**
- * Custom hook for managing the countdown display logic
- * @param initialValue Initial countdown value
+ * Custom hook for managing the countdown display logic within CountdownProvider
+ *
+ * NOTE: This hook MUST be used inside a component that is a child of CountdownProvider
  */
-export const useCountdownDisplay = (initialValue = 15) => {
-  const [counterProgress, setCounterProgress] = useState(0);
-  const [totalCountdown, setTotalCountdown] = useState(initialValue);
-  const [pause, setPause] = useState(false);
-  const [resetKey, setResetKey] = useState(0);
-  const countDownRef = useRef(null);
+export const useCountdownDisplay = () => {
+  const {
+    counter,
+    isRunning,
+    startTimer: contextStartTimer,
+    pauseTimer: contextPauseTimer,
+    resetTimer: contextResetTimer,
+  } = useCountdownContext();
 
-  // Update progress based on countdown value
-  const updateProgress = useCallback(
-    (value: number) => {
-      setCounterProgress(((totalCountdown - value) / totalCountdown) * 100);
-    },
-    [totalCountdown],
-  );
+  // We track UI state separate from timer state
+  const [pause, setPause] = useState(!isRunning);
 
   const countDownFinished = useCallback(() => {
     console.log("Countdown finished!");
   }, []);
 
-  // Timer control functions
-  const clearTimer = useCallback(() => {
-    if (countDownRef.current && countDownRef.current.clearTimer) {
-      countDownRef.current.clearTimer();
-    }
-  }, []);
-
+  // Timer control functions using context
   const startTimer = useCallback(() => {
-    if (countDownRef.current && countDownRef.current.startTimer) {
-      countDownRef.current.startTimer();
-      setPause(false);
-    }
-  }, []);
+    contextStartTimer();
+    setPause(false);
+  }, [contextStartTimer]);
 
   const pauseTimer = useCallback(() => {
-    if (countDownRef.current && countDownRef.current.pauseTimer) {
-      countDownRef.current.pauseTimer();
-      setPause(true);
-    }
-  }, []);
+    contextPauseTimer();
+    setPause(true);
+  }, [contextPauseTimer]);
 
-  const resetTimer = useCallback(() => {
-    clearTimer();
-    // Force a reset by incrementing the key
-    setResetKey((prev) => prev + 1);
-    // Reset progress
-    setCounterProgress(0);
-  }, [clearTimer]);
+  const resetTimer = useCallback(
+    (newValue: number = 0) => {
+      contextResetTimer(newValue);
+    },
+    [contextResetTimer],
+  );
 
-  // Function to handle countdown value change
-  const handleCountdownChange = useCallback((value: number) => {
-    setTotalCountdown(Number(value));
-  }, []);
+  // Function to handle setting a new countdown value
+  const handleSetCountdown = useCallback(
+    (newValue: number) => {
+      contextResetTimer(newValue);
+    },
+    [contextResetTimer],
+  );
 
   return {
-    // State
-    counterProgress,
-    totalCountdown,
+    // State from context
+    counter,
+    isRunning,
+
+    // Local UI state
     pause,
-    resetKey,
-    countDownRef,
 
     // Callbacks
-    updateProgress,
     countDownFinished,
     startTimer,
     pauseTimer,
     resetTimer,
-    handleCountdownChange,
+    handleSetCountdown,
   };
 };
 

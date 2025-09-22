@@ -3,7 +3,7 @@ import Display from "./components/Display";
 
 function App() {
   return (
-    <div className="flex flex-col justify-center items-center w-full max-w-md mx-auto mt-10 p-4">
+    <div className="flex flex-col justify-center items-center w-full">
       <Display />
     </div>
   );

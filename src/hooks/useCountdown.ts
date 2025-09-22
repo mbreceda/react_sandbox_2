@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
 interface UseCountdownProps {
   initialValue?: number | null;
@@ -10,6 +10,8 @@ interface UseCountdownProps {
 interface UseCountdownReturn {
   counter: number;
   isRunning: boolean;
+  initialValue: number;
+  progress: number;
   startTimer: () => void;
   pauseTimer: () => void;
   resetTimer: (newValue?: number) => void;
@@ -28,9 +30,12 @@ export const useCountdown = ({
   onDecrement,
   onComplete,
 }: UseCountdownProps = {}): UseCountdownReturn => {
-  // State to track the countdown value and running status
+  // State to track the countdown value, running status, and current initial value
   const [counter, setCounter] = useState(initialValue || 0);
   const [isRunning, setIsRunning] = useState(autoStart);
+  const [currentInitialValue, setCurrentInitialValue] = useState(
+    initialValue || 0,
+  );
 
   // Ref to store the timer ID
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -59,7 +64,9 @@ export const useCountdown = ({
     (newValue?: number) => {
       clearTimerInternal();
       setIsRunning(false);
-      setCounter(newValue !== undefined ? newValue : initialValue || 0);
+      const valueToSet = newValue !== undefined ? newValue : initialValue || 0;
+      setCounter(valueToSet);
+      setCurrentInitialValue(valueToSet); // Also update the current initial value
     },
     [clearTimerInternal, initialValue],
   );
@@ -67,10 +74,13 @@ export const useCountdown = ({
   // Reset counter when initialValue changes
   useEffect(() => {
     clearTimerInternal();
-    setCounter(initialValue || 0);
+    const valueToSet = initialValue || 0;
+    setCounter(valueToSet);
+    setCurrentInitialValue(valueToSet);
     setIsRunning(autoStart);
   }, [initialValue, autoStart, clearTimerInternal]);
 
+  // DO COUNTDOWN
   // Handle the countdown timer
   useEffect(() => {
     // Only start countdown if counter is positive AND isRunning is true
@@ -84,6 +94,7 @@ export const useCountdown = ({
     }
   }, [counter, isRunning, clearTimerInternal]);
 
+  // PROCESS COUNTDOWN
   // Handle side effects when counter changes
   useEffect(() => {
     // Call onDecrement when counter changes
@@ -97,9 +108,25 @@ export const useCountdown = ({
     }
   }, [counter, onDecrement, onComplete]);
 
+  // Calculate progress based on counter and current initial value
+  const progress = useMemo(() => {
+    if (currentInitialValue > 0) {
+      return Math.max(
+        0,
+        Math.min(
+          100,
+          ((currentInitialValue - counter) / currentInitialValue) * 100,
+        ),
+      );
+    }
+    return 0;
+  }, [counter, currentInitialValue]);
+
   return {
     counter,
     isRunning,
+    initialValue: currentInitialValue,
+    progress,
     startTimer,
     pauseTimer,
     resetTimer,
