@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useWizard } from "../../context/WizardContext";
-import { transformToToddlerCaricature, getApiKey } from "../../services/geminiService";
+import {
+  transformToToddlerCaricature,
+  getApiKey,
+} from "../../services/geminiService";
 import "./TransformationStep.css";
 
 export function TransformationStep() {
@@ -62,7 +65,10 @@ export function TransformationStep() {
     setIsProcessing(true);
 
     try {
-      const result = await transformToToddlerCaricature(originalImage, keyToUse);
+      const result = await transformToToddlerCaricature(
+        originalImage,
+        keyToUse,
+      );
       setGeneratedImage(result);
       goNext();
     } catch (err) {
@@ -70,7 +76,7 @@ export function TransformationStep() {
       setError(
         err instanceof Error
           ? err.message
-          : "Error al generar la caricatura. Verifica tu API Key e intenta de nuevo."
+          : "Error al generar la caricatura. Verifica tu API Key e intenta de nuevo.",
       );
     } finally {
       setIsProcessing(false);
@@ -101,8 +107,6 @@ export function TransformationStep() {
         </div>
 
         <div className="transformation-info">
-
-
           {!hasApiKey && (
             <div className="api-key-section">
               <label htmlFor="api-key">Llave del Estudio (API Key)</label>
@@ -137,7 +141,14 @@ export function TransformationStep() {
           disabled={isProcessing}
           title="Regresar"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -168,9 +179,7 @@ export function TransformationStep() {
         </button>
       </div>
 
-      {isProcessing && (
-        <p className="loading-phrase">{loadingPhrase}</p>
-      )}
+      {isProcessing && <p className="loading-phrase">{loadingPhrase}</p>}
     </div>
   );
 }
