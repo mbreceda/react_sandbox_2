@@ -1,0 +1,239 @@
+.photo-capture {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.capture-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+/* Large Touch Buttons - Sketch Theme */
+.capture-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 1rem;
+  margin: 0 auto;
+}
+
+.capture-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 2rem 2.5rem;
+  border: var(--border-sketch);
+  border-radius: var(--border-radius-sketch);
+  background: white;
+  color: black;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 110px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  box-shadow: var(--shadow-sketch);
+}
+
+.capture-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px black;
+}
+
+.capture-btn:hover {
+  /* Default hover base */
+  transform: rotate(-3deg) scale(1.02);
+  box-shadow: 8px 8px 0px black;
+}
+
+/* Upload and Camera buttons have default styles, hover defined below */
+
+.upload-btn:hover {
+  /* Rayado (Striped) Pattern - Blue/Dark Blue */
+  background: repeating-linear-gradient(45deg,
+      var(--hover-blue),
+      var(--hover-blue) 10px,
+      #0033CC 10px,
+      #0033CC 20px);
+  color: white;
+  text-shadow: 2px 2px 0px black;
+  /* Legibility pop */
+  border-color: black;
+  transform: rotate(2deg) scale(1.05);
+  /* Fun tilt right */
+}
+
+.camera-btn:hover {
+  /* Moteado (Polka Dots) Pattern - Yellow/Black */
+  background-color: var(--hover-yellow);
+  background-image: radial-gradient(black 20%, transparent 20%);
+  background-size: 10px 10px;
+
+  color: black;
+  /* Thick white outline for legibility against dots */
+  text-shadow:
+    1px 1px 0px white,
+    -1px -1px 0px white,
+    1px -1px 0px white,
+    -1px 1px 0px white,
+    2px 2px 0px black;
+
+  border-color: black;
+  transform: rotate(-2deg) scale(1.05);
+  /* Fun tilt left */
+}
+
+
+.capture-btn svg {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  stroke-width: 2.5px;
+}
+
+.capture-btn:hover svg {
+  animation: wiggle 0.4s ease-in-out infinite;
+}
+
+/* Icon Contrast Updates */
+.camera-btn:hover svg {
+  /* White outline + Black shadow to match text */
+  filter:
+    drop-shadow(1px 1px 0px white) drop-shadow(-1px -1px 0px white) drop-shadow(1px -1px 0px white) drop-shadow(-1px 1px 0px white) drop-shadow(2px 2px 0px black);
+}
+
+.upload-btn:hover svg {
+  /* Black shadow to match text */
+  filter: drop-shadow(2px 2px 0px black);
+}
+
+.capture-btn span {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hidden-input {
+  display: none;
+}
+
+/* Camera View */
+.camera-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.camera-preview {
+  width: 90%;
+  max-width: 100%;
+  max-height: 50vh;
+  border-radius: var(--border-radius-sketch);
+  transform: scaleX(-1);
+  box-shadow: var(--shadow-sketch);
+  object-fit: cover;
+  border: var(--border-sketch);
+  filter: grayscale(1);
+  /* Force B&W preview */
+}
+
+.camera-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.capture-photo-btn {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: white;
+  border: 5px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: var(--shadow-sketch);
+  touch-action: manipulation;
+}
+
+.capture-photo-btn:hover {
+  background: var(--hover-red);
+  transform: scale(1.1);
+}
+
+.capture-photo-btn:active {
+  transform: scale(0.9);
+}
+
+.capture-photo-btn svg {
+  width: 72px;
+  height: 72px;
+  color: black;
+}
+
+/* Preview Container */
+.preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 45vh;
+  border-radius: var(--border-radius-sketch);
+  box-shadow: var(--shadow-sketch);
+  object-fit: contain;
+  border: var(--border-sketch);
+  filter: grayscale(1);
+  /* Force B&W preview */
+}
+
+.preview-actions {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  flex-direction: column;
+}
+
+.preview-actions .action-btn {
+  width: 100%;
+}
+
+/* ================== */
+/* ANIMATIONS         */
+/* ================== */
+
+@keyframes fadeInUpSmall {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fadeInUpSmall 0.4s ease-out forwards;
+}
