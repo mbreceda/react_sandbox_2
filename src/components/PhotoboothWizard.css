@@ -1,0 +1,411 @@
+.photobooth-wizard {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* Theme-aware background - Clean White */
+  background-color: white;
+  /* background-image: url("/assets/wally-crowd-bg.png"); REMOVED */
+
+  padding: 1.5rem;
+  /* Parent handles scrolling now that child is visible */
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  isolation: isolate;
+  /* Create new stacking context for blending */
+}
+
+/* Hands Overlays - Split */
+.hand-overlay {
+  position: absolute;
+  /* Stick to the content box */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 180px;
+  /* Increased for wider canvas */
+  /* Fixed reasonable size relative to 600px box */
+  aspect-ratio: 1/1.5;
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 50;
+  /* Bring to front to overlap the border */
+
+  /* CHROMA KEY MAGIC: */
+}
+
+.hand-left {
+  left: -130px;
+  /* Adjusted for wider canvas */
+  background-image: url("/assets/hand-left.png");
+  background-position: right center;
+}
+
+.hand-right {
+  right: -130px;
+  /* Adjusted for wider canvas */
+  background-image: url("/assets/hand-right.png");
+  background-position: left center;
+}
+
+/* Old global overlay removed */
+.photobooth-wizard::after {
+  display: none;
+}
+
+/* Decorative dots - REMOVED for clean sketch look */
+.photobooth-wizard::before {
+  /* Overlay to fade the busy pattern slightly so content pops */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  /* 85% white overlay */
+  z-index: 0;
+  pointer-events: none;
+}
+
+.photobooth-wizard>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.wizard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+}
+
+.wizard-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: black;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.title-icon {
+  font-size: 2.5rem;
+  filter: grayscale(1);
+}
+
+.wizard-subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  color: black;
+  font-weight: 500;
+  font-family: monospace;
+}
+
+.title-logo {
+  height: 1.5rem;
+  width: auto;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  filter: grayscale(1);
+  object-fit: contain;
+}
+
+/* Progress Navigation */
+.wizard-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 4rem;
+  /* INCREASED: Make room for the Clown's head! */
+  position: relative;
+  padding: 0 1rem;
+  flex-shrink: 0;
+}
+
+.progress-line {
+  position: absolute;
+  top: 28px;
+  left: 15%;
+  right: 15%;
+  height: 4px;
+  background: black;
+  z-index: 0;
+  border-top: 1px dashed white;
+  /* Tick marks effect */
+}
+
+.progress-line-fill {
+  height: 100%;
+  background: black;
+  transition: width 0.5s ease;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1;
+  flex: 1;
+  max-width: 80px;
+}
+
+.progress-indicator {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: black;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 0px black;
+}
+
+.progress-indicator svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 3px;
+}
+
+.progress-step.active .progress-indicator {
+  background: black;
+  color: white;
+  transform: scale(1.1) translate(-2px, -2px);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.2);
+}
+
+.progress-step.completed .progress-indicator {
+  background: white;
+  color: black;
+  /* keep checkmark visible */
+}
+
+.progress-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+  background: white;
+  padding: 0 4px;
+}
+
+.progress-step.active .progress-label,
+.progress-step.completed .progress-label {
+  color: black;
+  font-weight: 900;
+  border-bottom: 2px solid black;
+}
+
+/* Content Card Container */
+.wizard-content {
+  flex: 1;
+  width: 100%;
+  max-width: 600px;
+  /* Increased from 500px */
+  margin: 0 auto;
+  /* Remove direct background/border to allow proper layering */
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
+  /* Shadow moves to ::before */
+  padding: 1.5rem 2rem;
+  /* Reduced for wider canvas */
+  /* Increased side padding to 3.5rem */
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  position: relative;
+  z-index: 10;
+}
+
+/* THE WHITE BOX (UI BACKGROUND) */
+.wizard-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border: var(--border-sketch);
+  border-radius: var(--border-radius-sketch);
+  box-shadow: var(--shadow-sketch);
+  z-index: -1;
+  /* Behind the text content */
+}
+
+/* THE HANDS HOLDING THE UI - Moved to parent for proper blending */
+.wizard-content::after {
+  display: none;
+}
+
+/* Footer */
+.wizard-footer {
+  text-align: center;
+  margin-top: 2rem;
+  color: black;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.wizard-footer p {
+  margin: 0;
+}
+
+/* ==================== */
+/* SHARED STEP STYLES   */
+/* ==================== */
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 4px solid black;
+  padding-bottom: 1rem;
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: black;
+  border-radius: 50%;
+  /* Keep circular for classic step feel */
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+  border: 3px solid black;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.step-info h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: black;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.step-info p {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.step-actions {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  /* More spacing between circular buttons */
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 2px dashed black;
+  flex-direction: row;
+  /* Ensure row layout */
+}
+
+/* ==================== */
+/* LARGE TOUCH BUTTONS  */
+/* ==================== */
+
+.action-btn {
+  padding: 1.25rem 2.5rem;
+  border-radius: var(--border-radius-sketch);
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: var(--border-sketch);
+  background: white;
+  color: black;
+  min-height: 64px;
+  min-width: 140px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sketch);
+}
+
+.action-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px black;
+}
+
+.primary-btn {
+  background: white;
+  border-width: 4px;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: var(--hover-blue);
+  color: white;
+  transform: rotate(-2deg) scale(1.05);
+  box-shadow: 8px 8px 0px black;
+  border-color: black;
+}
+
+.secondary-btn {
+  background: white;
+}
+
+.secondary-btn:hover:not(:disabled) {
+  background: var(--hover-red);
+  color: white;
+  transform: rotate(2deg) scale(1.05);
+  box-shadow: 8px 8px 0px black;
+  border-color: black;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* Full width buttons for touch */
+@media (max-width: 600px) {
+  .step-actions .action-btn {
+    width: 100%;
+  }
+}
+
+/* ==================== */
+/* ANIMATIONS           */
+/* ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-transition {
+  width: 100%;
+  height: 100%;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
