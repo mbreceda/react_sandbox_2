@@ -139,6 +139,145 @@
   animation: spin 1s linear infinite;
 }
 
+/* Custom Scrollbar for the exhibition feel */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: white;
+  border-left: 1px solid black;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: black;
+  border: 2px solid white;
+}
+
+/* Lightbox / Expanded View */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -40px;
+  right: -10px;
+  background: black;
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.lightbox-close:hover {
+  transform: scale(1.1) rotate(90deg);
+}
+
+.expanded-frame {
+  background: white;
+  padding: 1rem 1rem 3rem 1rem;
+  border: 5px solid black;
+  box-shadow: 20px 20px 0px rgba(0, 0, 0, 0.1);
+  transform: rotate(-1deg);
+}
+
+.expanded-frame img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border: 2px solid #eee;
+}
+
+.expanded-info {
+  background: white;
+  border: 2px solid black;
+  padding: 0.5rem 1rem;
+  font-weight: 800;
+  box-shadow: 4px 4px 0px black;
+}
+
+.expanded-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.5rem;
+  z-index: 2010;
+}
+
+.expanded-actions .action-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 4px solid black;
+  box-shadow: 6px 6px 0px black;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.expanded-actions .action-btn svg {
+  width: 28px;
+  height: 28px;
+  color: black;
+}
+
+.expanded-actions .action-btn:hover {
+  transform: scale(1.1) rotate(-3deg);
+  box-shadow: 8px 8px 0px black;
+}
+
+.expanded-actions .primary-btn:hover {
+  background: var(--hover-blue) !important;
+  color: white !important;
+}
+
+.expanded-actions .share-btn:hover {
+  background: var(--hover-yellow) !important;
+}
+
+.expanded-actions .action-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px black;
+}
+
+
 .empty-icon {
   font-size: 4rem;
   animation: float 3s ease-in-out infinite;
@@ -166,6 +305,16 @@
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .gallery-footer {
   text-align: center;
   padding-top: 1rem;
@@ -175,21 +324,21 @@
 
 @media (max-width: 480px) {
   .gallery-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr !important;
     gap: 1rem;
     padding: 0.5rem;
   }
 
   .gallery-header h2 {
     font-size: 1.4rem;
-    margin-top: 3rem;
-    /* Leave space for back button */
+    margin-top: 3.5rem;
+    /* Space for fixed/sticky back button if needed */
   }
 
   .back-btn {
-    width: 100%;
-    justify-content: center;
-    position: relative;
-    margin-bottom: 1rem;
+    width: auto;
+    position: absolute;
+    top: 0;
+    left: 1rem;
   }
 }
