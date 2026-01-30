@@ -1,13 +1,27 @@
 import { useRef, useState, useCallback, useEffect } from "react";
+import Cropper from "react-easy-crop";
+import { Area } from "react-easy-crop";
+import getCroppedImg from "../../utils/cropUtils";
 import { useWizard } from "../../context/WizardContext";
 import "./PhotoCapture.css";
 
 export function PhotoCapture() {
   const { setOriginalImage, goNext } = useWizard();
-  const [preview, setPreview] = useState<string | null>(null);
+
+  // Stages
+  const [imageSrc, setImageSrc] = useState<string | null>(null); // Raw input
+  const [preview, setPreview] = useState<string | null>(null);   // Final cropped
+
+  // Camera state
   const [isCamera, setIsCamera] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Cropper state
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Assign stream to video element when both are ready
@@ -23,7 +37,7 @@ export function PhotoCapture() {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
-        setPreview(result);
+        setImageSrc(result); // Show cropper
       };
       reader.readAsDataURL(file);
     }
@@ -31,8 +45,10 @@ export function PhotoCapture() {
 
   const startCamera = async () => {
     try {
+      // Prioritize environment facing mode for back camera on mobile if needed, 
+      // but 'user' is good for selfies.
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: 640, height: 480 },
+        video: { facingMode: "user", width: 1280, height: 720 }, // Higher res for crop
       });
       setIsCamera(true);
       setStream(mediaStream);
@@ -57,18 +73,12 @@ export function PhotoCapture() {
 
         ctx.drawImage(videoRef.current, 0, 0);
         const dataUrl = canvas.toDataURL("image/png");
-        setPreview(dataUrl);
 
-        // Stop camera immediately after capture
-        if (videoRef.current.srcObject) {
-          const tracks = (
-            videoRef.current.srcObject as MediaStream
-          ).getTracks();
-          tracks.forEach((track) => track.stop());
-          videoRef.current.srcObject = null;
-        }
-        setStream(null);
-        setIsCamera(false);
+        // Stop camera
+        stopCamera();
+
+        // Send to cropper
+        setImageSrc(dataUrl);
       }
     }
   }, []);
@@ -81,6 +91,26 @@ export function PhotoCapture() {
     setIsCamera(false);
   }, [stream]);
 
+  const onCropComplete = useCallback((_formattedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const showCroppedImage = useCallback(async () => {
+    if (imageSrc && croppedAreaPixels) {
+      try {
+        const croppedImage = await getCroppedImg(
+          imageSrc,
+          croppedAreaPixels,
+          0
+        );
+        setPreview(croppedImage);
+        setImageSrc(null); // Hide cropper, show preview/confirm
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [imageSrc, croppedAreaPixels]);
+
   const handleConfirm = () => {
     if (preview) {
       setOriginalImage(preview);
@@ -90,6 +120,14 @@ export function PhotoCapture() {
 
   const handleRetake = () => {
     setPreview(null);
+    setImageSrc(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleCancelCrop = () => {
+    setImageSrc(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -106,7 +144,8 @@ export function PhotoCapture() {
       </div>
 
       <div className="capture-area">
-        {!preview && !isCamera && (
+        {/* State 1: Selection Buttons */}
+        {!imageSrc && !preview && !isCamera && (
           <div className="capture-options animate-in">
             <button
               className="capture-btn upload-btn"
@@ -148,7 +187,8 @@ export function PhotoCapture() {
           </div>
         )}
 
-        {isCamera && !preview && (
+        {/* State 2: Camera Active */}
+        {isCamera && (
           <div className="camera-view animate-in">
             <video
               ref={videoRef}
@@ -159,7 +199,7 @@ export function PhotoCapture() {
             />
             <div className="camera-controls">
               <button className="action-btn cancel-btn" onClick={stopCamera}>
-                Cancelar Salida
+                Cancelar
               </button>
               <button
                 className="action-btn capture-photo-btn"
@@ -173,6 +213,49 @@ export function PhotoCapture() {
           </div>
         )}
 
+        {/* State 3: Cropper */}
+        {imageSrc && (
+          <div className="cropper-container animate-in">
+            <div className="cropper-wrapper">
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={3 / 4} // Standard portrait aspect ratio
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            <div className="cropper-controls">
+              <p className="instruction-text">Ajusta el recuadro a tu rostro</p>
+              <div className="slider-container">
+                <span>-</span>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="zoom-slider"
+                />
+                <span>+</span>
+              </div>
+              <div className="cropper-actions">
+                <button className="action-btn secondary-btn" onClick={handleCancelCrop}>
+                  Cancelar
+                </button>
+                <button className="action-btn primary-btn" onClick={showCroppedImage}>
+                  Recortar y Usar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* State 4: Final Preview Confirmation */}
         {preview && (
           <div className="preview-container animate-in">
             <img src={preview} alt="Preview" className="image-preview" />
@@ -181,7 +264,7 @@ export function PhotoCapture() {
                 className="action-btn secondary-btn"
                 onClick={handleRetake}
               >
-                Buscar otra pose
+                Volver a intentar
               </button>
               <button
                 className="action-btn primary-btn"

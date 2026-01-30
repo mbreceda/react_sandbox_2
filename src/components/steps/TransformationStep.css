@@ -224,3 +224,48 @@
   text-align: center;
   border-style: dashed;
 }
+
+/* ================== */
+/* MOBILE RESPONSIVE  */
+/* ================== */
+
+@media (max-width: 768px) {
+  .transformation-step {
+    gap: 1rem;
+  }
+
+  .transformation-content {
+    gap: 1rem;
+  }
+
+  .transformation-preview {
+    max-height: 25vh;
+  }
+
+  .transformation-info {
+    font-size: 0.9rem;
+  }
+
+  .info-card {
+    padding: 1rem;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+  }
+
+  .info-card ul {
+    font-size: 0.85rem;
+  }
+
+  .api-key-input {
+    padding: 1rem;
+    min-height: 50px;
+    font-size: 1rem;
+  }
+
+  .step-actions {
+    margin-top: auto;
+    /* Push to bottom */
+  }
+}
