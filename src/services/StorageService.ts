@@ -1,14 +1,4 @@
-import { uploadData } from 'aws-amplify/storage';
-
-/*
- * USAGE INSTRUCTIONS:
- * 1. Ensure you have configured Amplify in your project root (e.g., in main.tsx or App.tsx):
- *    import { Amplify } from 'aws-amplify';
- *    import outputs from '../amplify_outputs.json'; // or aws-exports.js
- *    Amplify.configure(outputs);
- * 
- * 2. Ensure your backend has Storage enabled with guest/auth access.
- */
+import { uploadData, getUrl } from 'aws-amplify/storage';
 
 /**
  * Converts a Base64 string to a Blob
@@ -34,24 +24,18 @@ export const StorageService = {
       const generatedBlob = await base64ToBlob(generatedBase64);
 
       // 2. Define operational paths
-      // Structure: public/year/month/day/session_id/
       const date = new Date();
       const pathPrefix = `uploads/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}/${sessionId}`;
 
       const originalPath = `${pathPrefix}/original.png`;
       const generatedPath = `${pathPrefix}/generated.png`;
 
-      // 3. Upload Original (Parallel execution if desired, but we'll await for safety)
-      /* 
-       * NOTE: Assuming 'guest' access or authenticated access is configured.
-       * 'options' can be customized.
-       */
+      // 3. Upload
       const uploadOriginal = uploadData({
         path: originalPath,
         data: originalBlob,
         options: {
-          contentType: 'image/png',
-          // accessLevel: 'guest' // Deprecated in Gen2, controlled by resource policy
+          contentType: 'image/png'
         }
       }).result;
 
@@ -77,8 +61,26 @@ export const StorageService = {
 
     } catch (error) {
       console.error("[StorageService] Upload failed:", error);
-      // We don't want to block the user flow if backup fails, so we return false but strictly log it.
       return { success: false, error };
+    }
+  },
+
+  /**
+   * Gets a signed URL for an image key
+   */
+  async getImageUrl(path: string): Promise<string> {
+    try {
+      const result = await getUrl({
+        path,
+        options: {
+          validateObjectExistence: true,
+          expiresIn: 3600 // 1 hour
+        }
+      });
+      return result.url.toString();
+    } catch (error) {
+      console.error("[StorageService] Error getting URL:", error);
+      return "";
     }
   }
 };
