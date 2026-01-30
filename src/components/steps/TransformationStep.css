@@ -3,6 +3,118 @@
   flex-direction: column;
   gap: 1.5rem;
   flex: 1;
+  position: relative;
+  /* For overlay positioning if needed */
+}
+
+/* SCANNING ANIMATION STYLES */
+/* ROCKET ERASE ANIMATION STYLES */
+.processing-overlay {
+  position: absolute;
+  /* Changed from fixed to confine within component */
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* Full width of parent */
+  height: 100%;
+  /* Full height of parent */
+  background: rgba(255, 255, 255, 0.98);
+  z-index: 10;
+  /* Lower z-index since it's inside relative parent */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--border-radius-sketch);
+  /* Match parent radius */
+}
+
+.rocket-container {
+  position: absolute;
+  top: 100%;
+  left: -20%;
+  font-size: 5rem;
+  /* Large emoji size */
+  animation: rocketFly 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  z-index: 12;
+  filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.2));
+  transform: rotate(45deg);
+}
+
+.rocket-svg {
+  display: none;
+  /* Hide SVG if present */
+}
+
+.smoke-trail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.smoke-particle {
+  position: absolute;
+  background: #eee;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: smokeFade 1s forwards;
+}
+
+@keyframes rocketFly {
+  0% {
+    top: 120%;
+    left: -20%;
+    transform: scale(0.8) rotate(45deg);
+  }
+
+  20% {
+    transform: scale(1.2) rotate(45deg);
+    /* Slight anticipation */
+  }
+
+  100% {
+    top: -20%;
+    left: 120%;
+    transform: scale(1) rotate(45deg);
+  }
+}
+
+@keyframes smokeFade {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Hide original image container during rocket animation */
+.scanning-container {
+  display: none;
+}
+
+.processing-overlay .loading-phrase {
+  position: absolute;
+  bottom: 20%;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  color: black;
+  animation: pulse 0.5s infinite alternate;
+  padding: 0 1rem;
+  z-index: 1003;
+  background: white;
+  border: 2px solid black;
+  padding: 0.5rem 1rem;
+  box-shadow: 4px 4px 0px black;
+  transform: rotate(-2deg);
 }
 
 .transformation-content {
@@ -14,7 +126,7 @@
 
 .transformation-preview {
   width: 100%;
-  max-height: 30vh;
+  max-height: 40vh;
   border-radius: var(--border-radius-sketch);
   box-shadow: var(--shadow-sketch);
   object-fit: contain;

@@ -43,7 +43,7 @@
 }
 
 .hand-right {
-  right: -130px;
+  right: -135px;
   /* Adjusted for wider canvas */
   background-image: url("/assets/hand-right.png");
   background-position: left center;
@@ -79,24 +79,29 @@
 }
 
 .wizard-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 900;
   color: black;
   margin: 0;
   display: flex;
   align-items: center;
+  flex-direction: row !important;
   justify-content: center;
   gap: 0.5rem;
   text-transform: uppercase;
   letter-spacing: -1px;
   flex-wrap: wrap;
+  gap: 1rem !important;
   /* Allow wrapping on small screens */
 }
 
 .title-text-container {
   display: flex;
+  flex-direction: row !important;
   align-items: center;
   gap: 0.5rem;
+  font-size: 1.2rem;
+  gap: 1rem !important;
 }
 
 .title-icon {
@@ -351,7 +356,7 @@
   border-top: 2px dashed black;
   flex-direction: row;
   /* Ensure row layout */
-  width: 45%;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -379,34 +384,48 @@
   box-shadow: var(--shadow-sketch);
 }
 
-.action-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px black;
-}
-
 .primary-btn {
   background: white;
   border-width: 4px;
-}
-
-.primary-btn:hover:not(:disabled) {
-  background: var(--hover-blue);
-  color: white;
-  transform: rotate(-2deg) scale(1.05);
-  box-shadow: 8px 8px 0px black;
-  border-color: black;
 }
 
 .secondary-btn {
   background: white;
 }
 
-.secondary-btn:hover:not(:disabled) {
-  background: var(--hover-red);
-  color: white;
-  transform: rotate(2deg) scale(1.05);
-  box-shadow: 8px 8px 0px black;
-  border-color: black;
+/* Reinforce Hover and Active States for all Action Buttons */
+.action-btn:hover:not(:disabled),
+.action-btn:active:not(:disabled) {
+  z-index: 2;
+}
+
+/* Colors apply to both hover and active for touch feedback */
+.primary-btn:hover:not(:disabled),
+.primary-btn:active:not(:disabled) {
+  background: var(--hover-blue) !important;
+  color: white !important;
+  border-color: black !important;
+}
+
+.secondary-btn:hover:not(:disabled),
+.secondary-btn:active:not(:disabled) {
+  background: var(--hover-red) !important;
+  color: white !important;
+  border-color: black !important;
+}
+
+/* Mouse-specific fancy transitions */
+@media (hover: hover) {
+  .action-btn:hover:not(:disabled) {
+    transform: rotate(-2deg) scale(1.05);
+    box-shadow: 8px 8px 0px black;
+  }
+}
+
+/* Tactile "Pressed" effect */
+.action-btn:active:not(:disabled) {
+  transform: translate(2px, 2px) scale(0.98) !important;
+  box-shadow: 2px 2px 0px black !important;
 }
 
 .action-btn:disabled {
