@@ -24,6 +24,20 @@ export function PhotoCapture() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Go to bottom of page
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    containerRef.current?.scrollTo({
+      top: containerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+
+
   // Assign stream to video element when both are ready
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -134,7 +148,7 @@ export function PhotoCapture() {
   };
 
   return (
-    <div className="photo-capture">
+    <div className="photo-capture" ref={containerRef}>
       <div className="step-header">
         <span className="step-number">1</span>
         <div className="step-info">

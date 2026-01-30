@@ -59,12 +59,12 @@ export function PhotoboothWizard() {
             className="title-logo"
           />
         </h1>
-        <p className="wizard-subtitle">
+        {/* <p className="wizard-subtitle">
           Transforma tu foto en una divertida caricatura
-        </p>
+        </p> */}
       </header>
 
-      <nav className="wizard-progress">
+      {/* <nav className="wizard-progress">
         {STEPS.map((step) => (
           <div
             key={step.number}
@@ -94,7 +94,7 @@ export function PhotoboothWizard() {
             style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
           />
         </div>
-      </nav>
+      </nav> */}
 
       <main className="wizard-content">
         {/* Hand Overlays - Moved inside to stick to the card */}
