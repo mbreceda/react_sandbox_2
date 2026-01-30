@@ -89,6 +89,14 @@
   gap: 0.5rem;
   text-transform: uppercase;
   letter-spacing: -1px;
+  flex-wrap: wrap;
+  /* Allow wrapping on small screens */
+}
+
+.title-text-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .title-icon {
@@ -111,6 +119,27 @@
   margin-left: 0.5rem;
   filter: grayscale(1);
   object-fit: contain;
+}
+
+/* Mobile adjustments for header */
+@media (max-width: 480px) {
+
+  .title-text-container,
+  .wizard-title {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .by-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .title-logo {
+    height: 1.2rem;
+    margin-left: 0;
+    margin-top: 0.2rem;
+  }
 }
 
 /* Progress Navigation */
@@ -227,7 +256,11 @@
   overflow: visible;
   position: relative;
   z-index: 10;
+  /* Removed max-height to allow full page scroll */
 }
+
+/* Explicit scrollable area inside the card - REMOVED */
+/* .wizard-content > div { overflow-y: auto; ... } */
 
 /* THE WHITE BOX (UI BACKGROUND) */
 .wizard-content::before {
@@ -318,6 +351,8 @@
   border-top: 2px dashed black;
   flex-direction: row;
   /* Ensure row layout */
+  width: 45%;
+  margin: 0 auto;
 }
 
 /* ==================== */
@@ -381,9 +416,25 @@
   box-shadow: none;
 }
 
+.icon-only-btn {
+  padding: 0;
+  width: 75px !important;
+  height: 75px !important;
+  min-width: unset;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-only-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
 /* Full width buttons for touch */
 @media (max-width: 600px) {
-  .step-actions .action-btn {
+  .step-actions .action-btn:not(.icon-only-btn) {
     width: 100%;
   }
 }
@@ -417,20 +468,22 @@
 @media (max-width: 768px) {
   .photobooth-wizard {
     padding: 1rem;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
-    /* App-like feel */
+    height: auto;
+    /* Remove fixed height */
+    min-height: 100vh;
+    overflow: visible;
+    /* Allow page scroll */
   }
 
   .hand-overlay {
-    display: none;
-    /* Hide decorative hands on mobile */
+    display: none !important;
+    /* Force hide decorative hands on mobile - they block content */
   }
 
   .wizard-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
   }
+
 
   .wizard-title {
     font-size: 1.75rem;
@@ -447,7 +500,8 @@
   }
 
   .wizard-progress {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    /* Reduced margin */
     gap: 0.5rem;
   }
 
@@ -456,15 +510,16 @@
   }
 
   .progress-indicator {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-    border-width: 3px;
+    width: 32px;
+    /* Smaller circle */
+    height: 32px;
+    font-size: 0.9rem;
+    border-width: 2px;
     box-shadow: 2px 2px 0px black;
   }
 
   .progress-step.active .progress-indicator {
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
   }
 
   .progress-label {
@@ -474,24 +529,19 @@
   }
 
   .progress-line {
-    top: 23px;
-    /* Adjust for smaller indicator */
+    top: 18px;
+    /* Adjusted for smaller indicator */
   }
 
   .wizard-content {
-    padding: 1rem;
+    padding: 0.5rem;
+    padding-top: 1rem;
     width: 100%;
     max-width: 100%;
     /* Maximize space */
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    /* Allow internal scrolling if content overflows */
-    -webkit-overflow-scrolling: touch;
-    /* Smooth scroll on iOS */
-    max-height: 100%;
-    /* Ensure it fits within the flex container */
   }
 
   .wizard-content::before {

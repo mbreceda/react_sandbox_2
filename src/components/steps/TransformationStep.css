@@ -135,7 +135,7 @@
   box-shadow: var(--shadow-sketch);
 }
 
-/* Icon Only Buttons */
+/* Icon Only Buttons (Generic) */
 .action-btn.icon-only-btn {
   width: 64px;
   height: 64px;
@@ -145,7 +145,6 @@
   align-items: center;
   justify-content: center;
   min-width: unset;
-  /* Override default min-width */
 }
 
 .action-btn.icon-only-btn svg {
@@ -153,14 +152,30 @@
   height: 32px;
 }
 
-/* Large Transform Button - Now Icon Only */
+/* Large Transform Button - Revert to Icon Only */
 .transform-btn {
-  /* Inherits icon-only-btn styles */
+  /* Inherits icon-only-btn styles via class composition if possible, but we'll enforce circularity here too */
   background: white;
   border: var(--border-sketch);
   color: black;
   box-shadow: var(--shadow-sketch);
   transition: all 0.2s ease;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 80px !important;
+  /* Slightly larger for main action */
+  height: 80px !important;
+  border-radius: 50% !important;
+  /* FORCE CIRCLE */
+  padding: 0 !important;
+  min-width: unset !important;
+}
+
+.transform-btn .btn-icon {
+  width: 32px;
+  height: 32px;
+  stroke-width: 2.5px;
 }
 
 .transform-btn:hover:not(:disabled) {
@@ -267,5 +282,11 @@
   .step-actions {
     margin-top: auto;
     /* Push to bottom */
+    width: 100%;
+  }
+
+  .transform-btn {
+    width: 100% !important;
+    min-width: unset;
   }
 }

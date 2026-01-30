@@ -3,6 +3,13 @@
   flex-direction: column;
   gap: 1.5rem;
   flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  /* Enable vertical scroll */
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scroll on iOS */
+  max-height: 100%;
+  /* Respect parent bounds */
 }
 
 .step-number.success {
@@ -162,13 +169,7 @@
   /* Extra thick for primary */
 }
 
-.email-btn:hover {
-  background: var(--hover-blue);
-  color: white;
-  transform: rotate(-2deg) scale(1.05);
-  box-shadow: 6px 6px 0px black;
-  border-color: black;
-}
+
 
 .danger-btn:hover {
   background: #ff4d4d;
@@ -219,6 +220,7 @@
 @media (min-width: 768px) {
   .result-view {
     justify-content: space-between;
+
     /* Push content apart */
     height: 100%;
   }
@@ -259,6 +261,7 @@
 @media (max-width: 768px) {
   .result-view {
     gap: 1rem;
+    overflow-y: hidden;
   }
 
   .comparison-view {
@@ -305,5 +308,10 @@
   .result-actions-secondary {
     padding-top: 1rem;
     gap: 1rem;
+  }
+
+  /* Hide email button on mobile */
+  .email-btn {
+    display: none;
   }
 }

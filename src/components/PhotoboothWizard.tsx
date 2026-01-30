@@ -49,7 +49,10 @@ export function PhotoboothWizard() {
               <polyline points="21 15 16 10 5 21" />
             </svg>
           </span>
-          Photobooth by{" "}
+          <div className="title-text-container">
+            <span>PHOTOBOOTH</span>
+            <span className="by-label">BY</span>
+          </div>
           <img
             src="/assets/fred-breceda.png"
             alt="Fred Breceda"
@@ -65,9 +68,8 @@ export function PhotoboothWizard() {
         {STEPS.map((step) => (
           <div
             key={step.number}
-            className={`progress-step ${
-              currentStep === step.number ? "active" : ""
-            } ${currentStep > step.number ? "completed" : ""}`}
+            className={`progress-step ${currentStep === step.number ? "active" : ""
+              } ${currentStep > step.number ? "completed" : ""}`}
           >
             <div className="progress-indicator">
               {currentStep > step.number ? (
