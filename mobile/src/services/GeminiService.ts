@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { Asset } from 'expo-asset';
+import { CostTracker } from './CostTracker';
 import * as FileSystem from 'expo-file-system/legacy';
 
 console.log("--- GEMINI SDK DIAGNOSTIC (V1.0.3) ---");
@@ -98,7 +99,7 @@ async function analyzeFacialFeatures(
   const ai = new GoogleGenAI({ apiKey });
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: "gemini-1.5-flash",
     contents: [
       {
         parts: [
@@ -112,6 +113,16 @@ async function analyzeFacialFeatures(
         ]
       },
     ],
+  });
+
+  const usage = response.usageMetadata;
+  // Fallback estimates if metadata is missing
+  const inputTokens = usage?.promptTokenCount || 1000;
+  const outputTokens = usage?.candidatesTokenCount || 200;
+
+  await CostTracker.logTransaction("gemini-1.5-flash", "text_analysis", {
+    inputTokens,
+    outputTokens
   });
 
   return response.candidates?.[0]?.content?.parts?.[0]?.text || "Generic face";
@@ -172,7 +183,7 @@ export async function transformToToddlerCaricature(
 
   console.log("[GeminiService] Sending transformation request to Gemini...");
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-image",
+    model: "gemini-2.0-flash-exp",
     contents: [
       {
         parts: contentsParts
@@ -188,6 +199,18 @@ export async function transformToToddlerCaricature(
   if (parts) {
     for (const part of parts) {
       if (part.inlineData?.data) {
+        // Log successful image generation
+        // Gemini 2.0 Flash Exp for images
+        // Usage metadata might be on response, check it
+        const iTokens = response.usageMetadata?.promptTokenCount || 3000;
+        // Image generation output tokens usually 0 or hidden, but we track "1 image"
+
+        await CostTracker.logTransaction("gemini-2.0-flash-exp", "image_generation", {
+          inputTokens: iTokens,
+          outputTokens: 0,
+          imagesGenerated: 1
+        });
+
         return `data:image/png;base64,${part.inlineData.data}`;
       }
     }
