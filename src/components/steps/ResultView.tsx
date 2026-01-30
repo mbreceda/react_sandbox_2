@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { useWizard } from "../../context/WizardContext";
+import { StorageService } from "../../services/StorageService";
 import "./ResultView.css";
 
 export function ResultView() {
   const { originalImage, generatedImage, reset, setCurrentStep } = useWizard();
 
   useEffect(() => {
-    // Trigger confetti on mount
+
+    // 1. Trigger confetti
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -39,6 +41,18 @@ export function ResultView() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Backup to S3 on mount (once)
+  useEffect(() => {
+    if (originalImage && generatedImage) {
+      StorageService.saveSessionImages(originalImage, generatedImage)
+        .then((res) => {
+          if (res.success) {
+            console.log("Backup complete:", res.sessionId);
+          }
+        });
+    }
+  }, []); // Run once on mount if images exist
 
   const handleDownload = () => {
     if (!generatedImage) return;
@@ -138,7 +152,15 @@ export function ResultView() {
           </svg>
         </button>
 
-        <button className="action-btn primary-btn email-btn icon-only-btn" onClick={() => window.location.href = `mailto:?subject=Mi Caricatura&body=Mira mi resultado!`} title="Enviar por Correo">
+        <button className="action-btn primary-btn download-btn icon-only-btn" onClick={handleDownload} title="Descargar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+
+        <button className="action-btn email-btn icon-only-btn" onClick={() => window.location.href = `mailto:?subject=Mi Caricatura&body=Mira mi resultado!`} title="Enviar por Correo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
             <polyline points="22,6 12,13 2,6" />
