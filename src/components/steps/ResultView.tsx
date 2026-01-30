@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { useWizard } from "../../context/WizardContext";
+import { generateClient } from "aws-amplify/data";
+import type { Schema } from "../../../amplify/data/resource";
 import { StorageService } from "../../services/StorageService";
 import "./ResultView.css";
+
+const client = generateClient<Schema>();
 
 export function ResultView() {
   const { originalImage, generatedImage, reset, setCurrentStep } = useWizard();
@@ -48,8 +52,20 @@ export function ResultView() {
     if (originalImage && generatedImage) {
       StorageService.saveSessionImages(originalImage, generatedImage).then(
         (res) => {
-          if (res.success) {
+          if (res.success && res.originalPath && res.generatedPath) {
             console.log("Backup complete:", res.sessionId);
+
+            // SAVE TO DATABASE LOG
+            (client.models.GenerationLog.create as any)({
+              sessionId: res.sessionId,
+              originalImageKey: res.originalPath,
+              generatedImageKey: res.generatedPath,
+              metadata: JSON.stringify({
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                timestamp: new Date().toISOString()
+              })
+            }).catch((dbErr: any) => console.error("Database log failed:", dbErr));
           }
         },
       );
