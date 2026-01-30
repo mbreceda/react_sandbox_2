@@ -605,3 +605,25 @@
     box-shadow: 4px 4px 0px black;
   }
 }
+
+.gallery-nav-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid black;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  color: black;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gallery-nav-btn:hover {
+  background: var(--hover-yellow);
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 0px black;
+}

@@ -2,6 +2,8 @@ import { useWizard } from "../context/WizardContext";
 import { PhotoCapture } from "./steps/PhotoCapture";
 import { TransformationStep } from "./steps/TransformationStep";
 import { ResultView } from "./steps/ResultView";
+import { GalleryView } from "./steps/GalleryView";
+import { useState } from "react";
 import "./PhotoboothWizard.css";
 
 const STEPS = [
@@ -12,6 +14,7 @@ const STEPS = [
 
 export function PhotoboothWizard() {
   const { currentStep } = useWizard();
+  const [showGallery, setShowGallery] = useState(false);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -59,6 +62,12 @@ export function PhotoboothWizard() {
             className="title-logo"
           />
         </h1>
+        <button
+          className="gallery-nav-btn"
+          onClick={() => setShowGallery(!showGallery)}
+        >
+          {showGallery ? "Volver al Studio" : "Hall of Fame 🎨"}
+        </button>
         {/* <p className="wizard-subtitle">
           Transforma tu foto en una divertida caricatura
         </p> */}
@@ -102,8 +111,12 @@ export function PhotoboothWizard() {
         <div className="hand-overlay hand-right" />
 
         {/* Animated Step Container */}
-        <div key={currentStep} className="step-transition">
-          {renderStep()}
+        <div key={showGallery ? 'gallery' : currentStep} className="step-transition">
+          {showGallery ? (
+            <GalleryView onBack={() => setShowGallery(false)} />
+          ) : (
+            renderStep()
+          )}
         </div>
       </main>
     </div>
