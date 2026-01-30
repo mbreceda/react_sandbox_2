@@ -4,6 +4,7 @@ import {
   transformToToddlerCaricature,
   getApiKey,
 } from "../../services/geminiService";
+import { ImageService } from "../../services/ImageService";
 import "./TransformationStep.css";
 
 export function TransformationStep() {
@@ -65,11 +66,16 @@ export function TransformationStep() {
     setIsProcessing(true);
 
     try {
+      // REAL API CALL
       const result = await transformToToddlerCaricature(
         originalImage,
         keyToUse,
       );
-      setGeneratedImage(result);
+
+      // Apply watermark before saving
+      const watermarkedResult = await ImageService.applyWatermark(result);
+      setGeneratedImage(watermarkedResult);
+
       goNext();
     } catch (err) {
       console.error("Transformation error:", err);
@@ -179,7 +185,66 @@ export function TransformationStep() {
         </button>
       </div>
 
-      {isProcessing && <p className="loading-phrase">{loadingPhrase}</p>}
+      {isProcessing && (
+        <div className="processing-overlay">
+          <div className="rocket-container">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="rocket-svg"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.48-.56.95-1.12 1.43-1.68" />
+              <path d="M12 15l-3 3" />
+              <path d="M15 12l-3 3" />
+              <path d="M16.5 4.5l3 3" />
+              <path
+                d="M20.5 3.5a1 1 0 0 0-1-1c-5 0-10 6-10 10 0 4 6 10 10 10a1 1 0 0 0 1-1c0-5-6-10-10-10"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <div className="smoke-trail">
+            {/* Simple static smoke particles for effect */}
+            <div
+              className="smoke-particle"
+              style={{
+                left: "20%",
+                top: "80%",
+                width: 50,
+                height: 50,
+                animationDelay: "0.2s",
+              }}
+            ></div>
+            <div
+              className="smoke-particle"
+              style={{
+                left: "50%",
+                top: "50%",
+                width: 80,
+                height: 80,
+                animationDelay: "1.2s",
+              }}
+            ></div>
+            <div
+              className="smoke-particle"
+              style={{
+                left: "80%",
+                top: "20%",
+                width: 60,
+                height: 60,
+                animationDelay: "2.2s",
+              }}
+            ></div>
+          </div>
+          <p className="loading-phrase">{loadingPhrase}</p>
+        </div>
+      )}
+
+      {!isProcessing && error && <div className="error-message">{error}</div>}
     </div>
   );
 }

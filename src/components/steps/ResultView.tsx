@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { useWizard } from "../../context/WizardContext";
 import { StorageService } from "../../services/StorageService";
@@ -6,9 +6,10 @@ import "./ResultView.css";
 
 export function ResultView() {
   const { originalImage, generatedImage, reset, setCurrentStep } = useWizard();
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showHomeConfirm, setShowHomeConfirm] = useState(false);
 
   useEffect(() => {
-
     // 1. Trigger confetti
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
@@ -18,7 +19,7 @@ export function ResultView() {
       return Math.random() * (max - min) + min;
     };
 
-    const interval: any = setInterval(function () {
+    const interval = setInterval(function () {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
@@ -45,14 +46,15 @@ export function ResultView() {
   // Backup to S3 on mount (once)
   useEffect(() => {
     if (originalImage && generatedImage) {
-      StorageService.saveSessionImages(originalImage, generatedImage)
-        .then((res) => {
+      StorageService.saveSessionImages(originalImage, generatedImage).then(
+        (res) => {
           if (res.success) {
             console.log("Backup complete:", res.sessionId);
           }
-        });
+        },
+      );
     }
-  }, []); // Run once on mount if images exist
+  }, [originalImage, generatedImage]); // Run when images are available
 
   const handleDownload = () => {
     if (!generatedImage) return;
@@ -109,41 +111,63 @@ export function ResultView() {
       </div>
 
       <div className="result-content">
-        <div className="comparison-view">
-          {originalImage && (
-            <div className="comparison-item">
-              <span className="comparison-label">Modelo</span>
-              <img
-                src={originalImage}
-                alt="Original"
-                className="comparison-image"
-              />
-            </div>
-          )}
-
+        <div className="hero-container">
           {generatedImage && (
-            <div className="comparison-item featured">
-              <span className="comparison-label">Obra Final</span>
+            <div className="comparison-item hero-item">
+              <span className="comparison-label hero-label">Obra Final</span>
               <img
                 src={generatedImage}
                 alt="Caricatura generada"
-                className="comparison-image caricature"
+                className="comparison-image hero-image"
               />
+
+              {originalImage && (
+                <div className="reference-thumbnail">
+                  <span className="comparison-label thumb-label">Modelo</span>
+                  <img
+                    src={originalImage}
+                    alt="Original"
+                    className="comparison-image thumb-image"
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
 
       <div className="result-actions">
-        <button className="action-btn secondary-btn icon-only-btn" onClick={handleNewPhoto} title="Nueva Pose">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 10 4 15 9 20" />
-            <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+        <button
+          className="action-btn secondary-btn icon-only-btn"
+          onClick={() => setShowHomeConfirm(true)}
+          title="Volver al Inicio"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
         </button>
 
-        <button className="action-btn share-btn icon-only-btn" onClick={handleShare} title="Compartir">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          className="action-btn share-btn icon-only-btn"
+          onClick={handleShare}
+          title="Compartir"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="18" cy="5" r="3" />
             <circle cx="6" cy="12" r="3" />
             <circle cx="18" cy="19" r="3" />
@@ -152,25 +176,95 @@ export function ResultView() {
           </svg>
         </button>
 
-        <button className="action-btn primary-btn download-btn icon-only-btn" onClick={handleDownload} title="Descargar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          className="action-btn primary-btn download-btn icon-only-btn"
+          onClick={handleDownload}
+          title="Descargar"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
         </button>
 
-
-
-        <button className="action-btn danger-btn icon-only-btn" onClick={() => setCurrentStep(2)} title="Borrador y Nuevo Intento">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          className="action-btn danger-btn icon-only-btn"
+          onClick={() => setShowResetConfirm(true)}
+          title="Borrador y Nuevo Intento"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M2.5 2v6h6" />
             <path d="M2.66 15.57a10 10 0 1 0 .57-8.38" />
           </svg>
         </button>
       </div>
 
-      {/* Secondary text links removed as they are now icons above */}
+      {showResetConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>¿Nuevo Dibujo?</h3>
+            <p>Se perderá este retrato si no lo has guardado.</p>
+            <div className="modal-actions">
+              <button
+                className="action-btn secondary-btn"
+                onClick={() => setShowResetConfirm(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="action-btn danger-btn"
+                onClick={() => {
+                  setShowResetConfirm(false);
+                  setCurrentStep(2);
+                }}
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showHomeConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>¿Volver al Inicio?</h3>
+            <p>Se borrará tu foto actual y el retrato.</p>
+            <div className="modal-actions">
+              <button
+                className="action-btn secondary-btn"
+                onClick={() => setShowHomeConfirm(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="action-btn danger-btn"
+                onClick={() => {
+                  setShowHomeConfirm(false);
+                  handleNewPhoto();
+                }}
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
