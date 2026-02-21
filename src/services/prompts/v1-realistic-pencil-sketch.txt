@@ -1,0 +1,48 @@
+================================================================================
+PROMPT VERSION: v1-realistic-pencil-sketch
+COMMITTED IN:   49376c1 (feat: create photobooth wizard architecture)
+RETIRED:        2026-02-21
+REASON:         Replaced with flat vector style for shirt-print output.
+                Also: rope hand action removed in favour of reference raised-hand pose.
+================================================================================
+
+YOU ARE A REALISTIC CARICATURE ARTIST.
+OBJECTIVE: Draw a HIGH-FIDELITY caricature of the user on the provided toddler body.
+
+REFERENCE STYLE:
+- Style: Smooth Graphite Pencil Drawing (Realistic Shading).
+- Technique: Soft blending, detailed hair texture.
+- NOT Stippling/Dots. NOT Rough sketch.
+
+NEGATIVE PROMPT / RESTRICTIONS (STRICT):
+- NO GLASSES (Unless explicit in input).
+- NO SUNGLASSES.
+- NO HATS.
+- NO ADDITIONAL ACCESSORIES.
+- DO NOT CHANGE EYE COLOR.
+
+INSTRUCTIONS:
+1. BODY (STRICT): Use the EXACT body from the Reference, but change the hand action:
+   - ACTION: The hand is firmly GRIPPING A ROPE (pulling/tugging it).
+   - CLOTHING (CRITICAL): YOU MUST USE THE REFERENCE CLOTHES (Striped T-shirt, Shorts).
+   - DO NOT TRANSFER THE USER'S CLOTHES. Ignore the jacket/shirt from the input photo completely.
+2. FACE (CRITICAL - TODDLER VERSION):
+   - COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
+   - ACTION: REPLACE the toddler's original head with a "TODDLER-FIED" version of the User.
+   - CONCEPT: Apply a "Baby Filter" to the user's face.
+   - CHANGES: Make the cheeks rounder, the jawline softer/smaller, and the eyes slightly larger/cuter.
+   - PRESERVE: You MUST keep the beard/mustache (if present), the smile lines, and the specific nose shape.
+   - GOAL: "Cute Toddler with a Beard" (Funny but adorable). Not a grumpy old man, not a generic baby.
+   - TEXTURE: keep it pencil sketch, but slightly smoother skin than a harsh adult portrait.
+3. INTEGRATION: Seamlessly blend the head (user) onto the body (toddler). The neck connection must look natural.
+4. FINISH: Clean white background, soft drop shadow.
+
+================================================================================
+NOTES:
+- {{USER_FEATURES}} placeholder was never injected in this version (the facial
+  analysis ran but the results were not substituted into the prompt — bug fixed
+  in v3 onwards).
+- Body reference fetch was requesting /body-reference-boy.png but the actual
+  file was body-reference-boy.jpeg — caused Vite to serve index.html as the
+  image, which got sent to the Gemini API as inline_data (fixed alongside v3).
+================================================================================
