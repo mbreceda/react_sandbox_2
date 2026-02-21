@@ -12,7 +12,11 @@ const schema = a.schema({
       sessionId: a.string().required(),
       originalImageKey: a.string().required(),
       generatedImageKey: a.string().required(),
-      metadata: a.string(), // Optional
+      metadata: a.string(),       // JSON: userAgent, platform, timestamp, detectedFeatures
+      rating: a.string(),         // "thumbs_up" | "thumbs_down"
+      feedbackTags: a.string(),   // JSON array: ["good_likeness", "wrong_pose", ...]
+      promptVersion: a.string(),  // Hash/label of which prompt was used
+      modelUsed: a.string(),      // e.g. "gemini-2.5-flash-image"
     })
     .authorization((allow) => [allow.guest()]),
 });
