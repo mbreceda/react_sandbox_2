@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+import type { GenerationResult, Gender } from "../services/geminiService";
 
 export type WizardStep = 1 | 2 | 3 | 4;
 
@@ -9,6 +10,8 @@ export interface WizardState {
   currentStep: WizardStep;
   isProcessing: boolean;
   apiKey: string;
+  generationMetadata: Omit<GenerationResult, "imageDataUrl"> | null;
+  dbRecordId: string | null; // ID of the DynamoDB record for this generation
 }
 
 interface WizardContextType extends WizardState {
@@ -18,6 +21,10 @@ interface WizardContextType extends WizardState {
   setCurrentStep: (step: WizardStep) => void;
   setIsProcessing: (processing: boolean) => void;
   setApiKey: (key: string) => void;
+  setGenerationMetadata: (meta: Omit<GenerationResult, "imageDataUrl"> | null) => void;
+  setDbRecordId: (id: string | null) => void;
+  // Convenience getter
+  detectedGender: Gender | null;
   reset: () => void;
   goNext: () => void;
   goBack: () => void;
@@ -32,6 +39,8 @@ const initialState: WizardState = {
   currentStep: 1,
   isProcessing: false,
   apiKey: "",
+  generationMetadata: null,
+  dbRecordId: null,
 };
 
 export function WizardProvider({ children }: { children: ReactNode }) {
@@ -54,6 +63,12 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 
   const setApiKey = (key: string) =>
     setState((prev) => ({ ...prev, apiKey: key }));
+
+  const setGenerationMetadata = (meta: Omit<GenerationResult, "imageDataUrl"> | null) =>
+    setState((prev) => ({ ...prev, generationMetadata: meta }));
+
+  const setDbRecordId = (id: string | null) =>
+    setState((prev) => ({ ...prev, dbRecordId: id }));
 
   const reset = () => setState(initialState);
 
@@ -79,6 +94,10 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         setCurrentStep,
         setIsProcessing,
         setApiKey,
+        setGenerationMetadata,
+        setDbRecordId,
+        // Derived convenience value so consumers don't need to dig into metadata
+        detectedGender: state.generationMetadata?.detectedGender ?? null,
         reset,
         goNext,
         goBack,

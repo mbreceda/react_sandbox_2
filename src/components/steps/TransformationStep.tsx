@@ -11,6 +11,7 @@ export function TransformationStep() {
   const {
     originalImage,
     setGeneratedImage,
+    setGenerationMetadata,
     goNext,
     goBack,
     isProcessing,
@@ -37,7 +38,6 @@ export function TransformationStep() {
       ];
 
       let index = 0;
-      // Initial phrase
       setLoadingPhrase(phrases[0]);
 
       const interval = setInterval(() => {
@@ -66,15 +66,20 @@ export function TransformationStep() {
     setIsProcessing(true);
 
     try {
-      // REAL API CALL
-      const result = await transformToToddlerCaricature(
-        originalImage,
-        keyToUse,
-      );
+      // REAL API CALL — now returns GenerationResult object
+      const result = await transformToToddlerCaricature(originalImage, keyToUse);
 
       // Apply watermark before saving
-      const watermarkedResult = await ImageService.applyWatermark(result);
+      const watermarkedResult = await ImageService.applyWatermark(result.imageDataUrl);
       setGeneratedImage(watermarkedResult);
+
+      // Store generation metadata in context for feedback
+      setGenerationMetadata({
+        detectedFeatures: result.detectedFeatures,
+        detectedGender: result.detectedGender,
+        promptVersion: result.promptVersion,
+        modelUsed: result.modelUsed,
+      });
 
       goNext();
     } catch (err) {
@@ -88,6 +93,7 @@ export function TransformationStep() {
       setIsProcessing(false);
     }
   };
+
 
   const hasApiKey = !!envApiKey;
 
