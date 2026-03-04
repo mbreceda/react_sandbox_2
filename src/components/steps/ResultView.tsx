@@ -24,6 +24,7 @@ export function ResultView() {
     originalImage,
     generatedImage,
     generationMetadata,
+    toddlerIntensity,
     dbRecordId,
     setDbRecordId,
     reset,
@@ -34,7 +35,9 @@ export function ResultView() {
   const [showHomeConfirm, setShowHomeConfirm] = useState(false);
 
   // Feedback state
-  const [rating, setRating] = useState<"thumbs_up" | "thumbs_down" | null>(null);
+  const [rating, setRating] = useState<"thumbs_up" | "thumbs_down" | null>(
+    null,
+  );
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [feedbackSaved, setFeedbackSaved] = useState(false);
   const [feedbackSaving, setFeedbackSaving] = useState(false);
@@ -43,7 +46,9 @@ export function ResultView() {
   // Track if the DB log has been created yet
   const dbLogCreated = useRef(false);
   // Store feedback submitted before the DB record ID was ready
-  const pendingFeedback = useRef<{ rating: string; tags: string[] } | null>(null);
+  const pendingFeedback = useRef<{ rating: string; tags: string[] } | null>(
+    null,
+  );
 
   useEffect(() => {
     // Trigger confetti
@@ -59,8 +64,16 @@ export function ResultView() {
       if (timeLeft <= 0) return clearInterval(interval);
 
       const particleCount = 50 * (timeLeft / duration);
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      });
     }, 250);
 
     return () => clearInterval(interval);
@@ -70,57 +83,64 @@ export function ResultView() {
   useEffect(() => {
     if (originalImage && generatedImage && !dbLogCreated.current) {
       dbLogCreated.current = true;
-      StorageService.saveSessionImages(originalImage, generatedImage).then((res) => {
-        if (res.success && res.originalPath && res.generatedPath) {
-          console.log("Backup complete:", res.sessionId);
+      StorageService.saveSessionImages(originalImage, generatedImage).then(
+        (res) => {
+          if (res.success && res.originalPath && res.generatedPath) {
+            console.log("Backup complete:", res.sessionId);
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (client.models.GenerationLog.create as any)({
-            sessionId: res.sessionId,
-            originalImageKey: res.originalPath,
-            generatedImageKey: res.generatedPath,
-            promptVersion: generationMetadata?.promptVersion ?? "",
-            modelUsed: generationMetadata?.modelUsed ?? "",
-            metadata: JSON.stringify({
-              userAgent: navigator.userAgent,
-              platform: navigator.platform,
-              timestamp: new Date().toISOString(),
-              detectedFeatures: generationMetadata?.detectedFeatures ?? "",
-            }),
-          }).then((dbRes) => {
-            if (dbRes?.data?.id) {
-              const newId = dbRes.data.id;
-              setDbRecordId(newId);
-              console.log("DB record created:", newId);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (client.models.GenerationLog.create as any)({
+              sessionId: res.sessionId,
+              originalImageKey: res.originalPath,
+              generatedImageKey: res.generatedPath,
+              promptVersion: generationMetadata?.promptVersion ?? "",
+              modelUsed: generationMetadata?.modelUsed ?? "",
+              metadata: JSON.stringify({
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                timestamp: new Date().toISOString(),
+                detectedFeatures: generationMetadata?.detectedFeatures ?? "",
+                toddlerIntensity: toddlerIntensity,
+              }),
+            })
+              .then((dbRes) => {
+                if (dbRes?.data?.id) {
+                  const newId = dbRes.data.id;
+                  setDbRecordId(newId);
+                  console.log("DB record created:", newId);
 
-              // Flush any feedback that was submitted before the ID was ready
-              if (pendingFeedback.current) {
-                const { rating: pr, tags: pt } = pendingFeedback.current;
-                pendingFeedback.current = null;
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (client.models.GenerationLog.update as any)({
-                  id: newId,
-                  rating: pr,
-                  feedbackTags: JSON.stringify(pt),
-                }).then(() => {
-                  console.log("Pending feedback flushed:", { pr, pt });
-                  setFeedbackSaved(true);
-                  setFeedbackSaving(false);
-                }).catch((err) => {
-                  console.error("Pending feedback flush failed:", err);
-                  setFeedbackSaving(false);
-                });
-              }
-            }
-          }).catch((dbErr) => console.error("Database log failed:", dbErr));
-        }
-      });
+                  // Flush any feedback that was submitted before the ID was ready
+                  if (pendingFeedback.current) {
+                    const { rating: pr, tags: pt } = pendingFeedback.current;
+                    pendingFeedback.current = null;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (client.models.GenerationLog.update as any)({
+                      id: newId,
+                      rating: pr,
+                      feedbackTags: JSON.stringify(pt),
+                    })
+                      .then(() => {
+                        console.log("Pending feedback flushed:", { pr, pt });
+                        setFeedbackSaved(true);
+                        setFeedbackSaving(false);
+                      })
+                      .catch((err) => {
+                        console.error("Pending feedback flush failed:", err);
+                        setFeedbackSaving(false);
+                      });
+                  }
+                }
+              })
+              .catch((dbErr) => console.error("Database log failed:", dbErr));
+          }
+        },
+      );
     }
   }, [originalImage, generatedImage]);
 
   const toggleTag = (tagId: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId]
+      prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId],
     );
   };
 
@@ -177,12 +197,20 @@ export function ResultView() {
     try {
       const response = await fetch(generatedImage);
       const blob = await response.blob();
-      const file = new File([blob], "caricatura-toddler.png", { type: "image/png" });
+      const file = new File([blob], "caricatura-toddler.png", {
+        type: "image/png",
+      });
 
       if (navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: "Mi Caricatura Toddler", text: "¡Mira mi caricatura estilo toddler!" });
+        await navigator.share({
+          files: [file],
+          title: "Mi Caricatura Toddler",
+          text: "¡Mira mi caricatura estilo toddler!",
+        });
       } else {
-        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob }),
+        ]);
         alert("¡Imagen copiada al portapapeles!");
       }
     } catch (error) {
@@ -207,11 +235,19 @@ export function ResultView() {
           {generatedImage && (
             <div className="comparison-item hero-item">
               <span className="comparison-label hero-label">Obra Final</span>
-              <img src={generatedImage} alt="Caricatura generada" className="comparison-image hero-image" />
+              <img
+                src={generatedImage}
+                alt="Caricatura generada"
+                className="comparison-image hero-image"
+              />
               {originalImage && (
                 <div className="reference-thumbnail">
                   <span className="comparison-label thumb-label">Modelo</span>
-                  <img src={originalImage} alt="Original" className="comparison-image thumb-image" />
+                  <img
+                    src={originalImage}
+                    alt="Original"
+                    className="comparison-image thumb-image"
+                  />
                 </div>
               )}
             </div>
@@ -246,10 +282,18 @@ export function ResultView() {
 
       {/* ── FEEDBACK MODAL ── */}
       {showFeedbackModal && rating && (
-        <div className="modal-overlay" onClick={() => setShowFeedbackModal(false)}>
-          <div className="modal-content feedback-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowFeedbackModal(false)}
+        >
+          <div
+            className="modal-content feedback-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <p className="feedback-modal-title">
-              {rating === "thumbs_up" ? "¡Me alegra! ¿Qué salió bien?" : "Oh no 😅 ¿Qué falló?"}
+              {rating === "thumbs_up"
+                ? "¡Me alegra! ¿Qué salió bien?"
+                : "Oh no 😅 ¿Qué falló?"}
             </p>
             <div className="feedback-tags">
               {FEEDBACK_TAGS.map((tag) => (
@@ -285,15 +329,37 @@ export function ResultView() {
       )}
 
       <div className="result-actions">
-        <button className="action-btn secondary-btn icon-only-btn" onClick={() => setShowHomeConfirm(true)} title="Volver al Inicio">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          className="action-btn secondary-btn icon-only-btn"
+          onClick={() => setShowHomeConfirm(true)}
+          title="Volver al Inicio"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
         </button>
 
-        <button className="action-btn share-btn icon-only-btn" onClick={handleShare} title="Compartir">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          className="action-btn share-btn icon-only-btn"
+          onClick={handleShare}
+          title="Compartir"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="18" cy="5" r="3" />
             <circle cx="6" cy="12" r="3" />
             <circle cx="18" cy="19" r="3" />
@@ -302,16 +368,38 @@ export function ResultView() {
           </svg>
         </button>
 
-        <button className="action-btn primary-btn download-btn icon-only-btn" onClick={handleDownload} title="Descargar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          className="action-btn primary-btn download-btn icon-only-btn"
+          onClick={handleDownload}
+          title="Descargar"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
         </button>
 
-        <button className="action-btn danger-btn icon-only-btn" onClick={() => setShowResetConfirm(true)} title="Borrador y Nuevo Intento">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          className="action-btn danger-btn icon-only-btn"
+          onClick={() => setShowResetConfirm(true)}
+          title="Borrador y Nuevo Intento"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M2.5 2v6h6" />
             <path d="M2.66 15.57a10 10 0 1 0 .57-8.38" />
           </svg>
@@ -324,8 +412,21 @@ export function ResultView() {
             <h3>¿Nuevo Dibujo?</h3>
             <p>Se perderá este retrato si no lo has guardado.</p>
             <div className="modal-actions">
-              <button className="action-btn secondary-btn" onClick={() => setShowResetConfirm(false)}>Cancelar</button>
-              <button className="action-btn danger-btn" onClick={() => { setShowResetConfirm(false); setCurrentStep(2); }}>Confirmar</button>
+              <button
+                className="action-btn secondary-btn"
+                onClick={() => setShowResetConfirm(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="action-btn danger-btn"
+                onClick={() => {
+                  setShowResetConfirm(false);
+                  setCurrentStep(2);
+                }}
+              >
+                Confirmar
+              </button>
             </div>
           </div>
         </div>
@@ -337,8 +438,21 @@ export function ResultView() {
             <h3>¿Volver al Inicio?</h3>
             <p>Se borrará tu foto actual y el retrato.</p>
             <div className="modal-actions">
-              <button className="action-btn secondary-btn" onClick={() => setShowHomeConfirm(false)}>Cancelar</button>
-              <button className="action-btn danger-btn" onClick={() => { setShowHomeConfirm(false); handleNewPhoto(); }}>Confirmar</button>
+              <button
+                className="action-btn secondary-btn"
+                onClick={() => setShowHomeConfirm(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="action-btn danger-btn"
+                onClick={() => {
+                  setShowHomeConfirm(false);
+                  handleNewPhoto();
+                }}
+              >
+                Confirmar
+              </button>
             </div>
           </div>
         </div>

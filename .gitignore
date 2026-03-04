@@ -37,3 +37,4 @@ artifacts/*
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+.env

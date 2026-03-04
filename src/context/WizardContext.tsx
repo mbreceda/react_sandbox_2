@@ -12,6 +12,7 @@ export interface WizardState {
   apiKey: string;
   generationMetadata: Omit<GenerationResult, "imageDataUrl"> | null;
   dbRecordId: string | null; // ID of the DynamoDB record for this generation
+  toddlerIntensity: number; // 0 to 100
 }
 
 interface WizardContextType extends WizardState {
@@ -21,8 +22,11 @@ interface WizardContextType extends WizardState {
   setCurrentStep: (step: WizardStep) => void;
   setIsProcessing: (processing: boolean) => void;
   setApiKey: (key: string) => void;
-  setGenerationMetadata: (meta: Omit<GenerationResult, "imageDataUrl"> | null) => void;
+  setGenerationMetadata: (
+    meta: Omit<GenerationResult, "imageDataUrl"> | null,
+  ) => void;
   setDbRecordId: (id: string | null) => void;
+  setToddlerIntensity: (intensity: number) => void;
   // Convenience getter
   detectedGender: Gender | null;
   reset: () => void;
@@ -41,6 +45,7 @@ const initialState: WizardState = {
   apiKey: "",
   generationMetadata: null,
   dbRecordId: null,
+  toddlerIntensity: 100,
 };
 
 export function WizardProvider({ children }: { children: ReactNode }) {
@@ -64,11 +69,15 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   const setApiKey = (key: string) =>
     setState((prev) => ({ ...prev, apiKey: key }));
 
-  const setGenerationMetadata = (meta: Omit<GenerationResult, "imageDataUrl"> | null) =>
-    setState((prev) => ({ ...prev, generationMetadata: meta }));
+  const setGenerationMetadata = (
+    meta: Omit<GenerationResult, "imageDataUrl"> | null,
+  ) => setState((prev) => ({ ...prev, generationMetadata: meta }));
 
   const setDbRecordId = (id: string | null) =>
     setState((prev) => ({ ...prev, dbRecordId: id }));
+
+  const setToddlerIntensity = (intensity: number) =>
+    setState((prev) => ({ ...prev, toddlerIntensity: intensity }));
 
   const reset = () => setState(initialState);
 
@@ -96,6 +105,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         setApiKey,
         setGenerationMetadata,
         setDbRecordId,
+        setToddlerIntensity,
         // Derived convenience value so consumers don't need to dig into metadata
         detectedGender: state.generationMetadata?.detectedGender ?? null,
         reset,

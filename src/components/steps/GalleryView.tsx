@@ -29,12 +29,13 @@ export function GalleryView({ onBack }: GalleryViewProps) {
     try {
       setLoading(true);
       const { data: logs } = await client.models.GenerationLog.list({
-        limit: 50 // Increased limit for better scrolling experience
+        limit: 50, // Increased limit for better scrolling experience
       });
 
       // Sort by creation date (newest first)
-      const sortedLogs = [...logs].sort((a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      const sortedLogs = [...logs].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
 
       // Get signed URLs for all images
@@ -44,12 +45,12 @@ export function GalleryView({ onBack }: GalleryViewProps) {
           return {
             id: log.id,
             generatedUrl: url,
-            createdAt: log.createdAt
+            createdAt: log.createdAt,
           };
-        })
+        }),
       );
 
-      setItems(itemsWithUrls.filter(item => item.generatedUrl));
+      setItems(itemsWithUrls.filter((item) => item.generatedUrl));
     } catch (err) {
       console.error("Error fetching gallery:", err);
     } finally {
@@ -91,11 +92,33 @@ export function GalleryView({ onBack }: GalleryViewProps) {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (window.confirm("¿Seguro que quieres eliminar esta obra de arte?")) {
+      try {
+        setLoading(true);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (client.models.GenerationLog.delete as any)({ id });
+        setSelectedItem(null);
+        await fetchGallery();
+      } catch (err) {
+        console.error("Error deleting image:", err);
+        alert("Hubo un error al eliminar la imagen.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="gallery-view animate-in">
       <div className="gallery-header">
         <button className="back-btn" onClick={onBack}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+          >
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
           Volver
@@ -125,7 +148,11 @@ export function GalleryView({ onBack }: GalleryViewProps) {
                 onClick={() => setSelectedItem(item)}
               >
                 <div className="card-frame">
-                  <img src={item.generatedUrl} alt="Caricatura" loading="lazy" />
+                  <img
+                    src={item.generatedUrl}
+                    alt="Caricatura"
+                    loading="lazy"
+                  />
                 </div>
                 <div className="card-date">
                   {new Date(item.createdAt).toLocaleDateString()}
@@ -143,15 +170,34 @@ export function GalleryView({ onBack }: GalleryViewProps) {
       {/* Lightbox / Expanded View */}
       {selectedItem && (
         <div className="lightbox-overlay" onClick={() => setSelectedItem(null)}>
-          <div className="lightbox-content" onClick={e => e.stopPropagation()}>
-            <button className="lightbox-close" onClick={() => setSelectedItem(null)}>&times;</button>
+          <div
+            className="lightbox-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="lightbox-close"
+              onClick={() => setSelectedItem(null)}
+            >
+              &times;
+            </button>
             <div className="expanded-frame">
               <img src={selectedItem.generatedUrl} alt="Caricatura expandida" />
             </div>
 
             <div className="expanded-actions">
-              <button className="action-btn share-btn icon-only-btn" onClick={() => handleShare(selectedItem.generatedUrl)} title="Compartir">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <button
+                className="action-btn share-btn icon-only-btn"
+                onClick={() => handleShare(selectedItem.generatedUrl)}
+                title="Compartir"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <circle cx="18" cy="5" r="3" />
                   <circle cx="6" cy="12" r="3" />
                   <circle cx="18" cy="19" r="3" />
@@ -160,17 +206,51 @@ export function GalleryView({ onBack }: GalleryViewProps) {
                 </svg>
               </button>
 
-              <button className="action-btn primary-btn download-btn icon-only-btn" onClick={() => handleDownload(selectedItem.generatedUrl)} title="Descargar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <button
+                className="action-btn primary-btn download-btn icon-only-btn"
+                onClick={() => handleDownload(selectedItem.generatedUrl)}
+                title="Descargar"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
               </button>
+
+              <button
+                className="action-btn danger-btn icon-only-btn"
+                onClick={() => handleDelete(selectedItem.id)}
+                title="Eliminar"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+              </button>
             </div>
 
             <div className="expanded-info">
-              <span>Publicado el {new Date(selectedItem.createdAt).toLocaleDateString()}</span>
+              <span>
+                Publicado el{" "}
+                {new Date(selectedItem.createdAt).toLocaleDateString()}
+              </span>
             </div>
           </div>
         </div>

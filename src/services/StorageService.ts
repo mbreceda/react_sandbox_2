@@ -1,4 +1,4 @@
-import { uploadData, getUrl } from 'aws-amplify/storage';
+import { uploadData, getUrl } from "aws-amplify/storage";
 
 /**
  * Converts a Base64 string to a Blob
@@ -35,30 +35,31 @@ export const StorageService = {
         path: originalPath,
         data: originalBlob,
         options: {
-          contentType: 'image/png'
-        }
+          contentType: "image/png",
+        },
       }).result;
 
       const uploadGenerated = uploadData({
         path: generatedPath,
         data: generatedBlob,
         options: {
-          contentType: 'image/png'
-        }
+          contentType: "image/png",
+        },
       }).result;
 
       // Wait for both
       await Promise.all([uploadOriginal, uploadGenerated]);
 
-      console.log(`[StorageService] Successfully uploaded images to ${pathPrefix}`);
+      console.log(
+        `[StorageService] Successfully uploaded images to ${pathPrefix}`,
+      );
 
       return {
         success: true,
         sessionId,
         originalPath,
-        generatedPath
+        generatedPath,
       };
-
     } catch (error) {
       console.error("[StorageService] Upload failed:", error);
       return { success: false, error };
@@ -73,14 +74,13 @@ export const StorageService = {
       const result = await getUrl({
         path,
         options: {
-          validateObjectExistence: true,
-          expiresIn: 3600 // 1 hour
-        }
+          expiresIn: 3600, // 1 hour
+        },
       });
       return result.url.toString();
     } catch (error) {
       console.error("[StorageService] Error getting URL:", error);
       return "";
     }
-  }
+  },
 };

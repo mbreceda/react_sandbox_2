@@ -600,9 +600,16 @@
     font-size: 1rem;
     min-height: 56px;
     min-width: unset;
+    box-shadow: 4px 4px 0px black;
+  }
+
+  .action-btn:not(.icon-only-btn) {
     flex: 1;
     /* Equal width buttons */
-    box-shadow: 4px 4px 0px black;
+  }
+
+  .icon-only-btn {
+    flex: none;
   }
 }
 

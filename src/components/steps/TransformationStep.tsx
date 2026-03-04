@@ -12,6 +12,8 @@ export function TransformationStep() {
     originalImage,
     setGeneratedImage,
     setGenerationMetadata,
+    toddlerIntensity,
+    setToddlerIntensity,
     goNext,
     goBack,
     isProcessing,
@@ -67,10 +69,16 @@ export function TransformationStep() {
 
     try {
       // REAL API CALL — now returns GenerationResult object
-      const result = await transformToToddlerCaricature(originalImage, keyToUse);
+      const result = await transformToToddlerCaricature(
+        originalImage,
+        keyToUse,
+        toddlerIntensity,
+      );
 
       // Apply watermark before saving
-      const watermarkedResult = await ImageService.applyWatermark(result.imageDataUrl);
+      const watermarkedResult = await ImageService.applyWatermark(
+        result.imageDataUrl,
+      );
       setGeneratedImage(watermarkedResult);
 
       // Store generation metadata in context for feedback
@@ -94,7 +102,6 @@ export function TransformationStep() {
     }
   };
 
-
   const hasApiKey = !!envApiKey;
 
   return (
@@ -109,13 +116,56 @@ export function TransformationStep() {
 
       <div className="transformation-content">
         <div className="preview-section">
-          {originalImage && (
-            <img
-              src={originalImage}
-              alt="Tu foto"
-              className="transformation-preview"
-            />
-          )}
+          <div
+            style={{ width: "100%", display: "flex", flexDirection: "column" }}
+          >
+            {originalImage && (
+              <img
+                src={originalImage}
+                alt="Tu foto"
+                className="transformation-preview"
+              />
+            )}
+
+            <div className="intensity-slider-section">
+              <label htmlFor="toddler-slider">Nivel de Filtro</label>
+              <div className="slider-control">
+                <span className="slider-label">
+                  0%
+                  <br />
+                  <small>(Adulto)</small>
+                </span>
+                <input
+                  id="toddler-slider"
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="25"
+                  value={toddlerIntensity}
+                  onChange={(e) => setToddlerIntensity(Number(e.target.value))}
+                  disabled={isProcessing}
+                  className="toddler-slider"
+                />
+                <span className="slider-label">
+                  100%
+                  <br />
+                  <small>(Bebé)</small>
+                </span>
+              </div>
+              <p className="intensity-description">
+                {toddlerIntensity === 100 &&
+                  "Bebé original ✨ (Mofletes, ojitos tiernos — el que te gustó)."}
+                {toddlerIntensity === 75 &&
+                  "Suave (Más parecido a la persona, toque juvenil sutil)."}
+                {toddlerIntensity === 50 &&
+                  "Caricatura (Rasgos exagerados, sin filtro bebé)."}
+                {toddlerIntensity === 25 &&
+                  "Adulto fiel (Likeness 1:1, sin suavizar nada)."}
+                {toddlerIntensity === 0 &&
+                  "Transferencia directa (Cara exacta sobre el cuerpo)."}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="transformation-info">

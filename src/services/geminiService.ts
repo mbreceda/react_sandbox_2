@@ -28,15 +28,8 @@ INSTRUCTIONS:
    - STRICTLY NO ROPE: Do not draw any rope, string, or object in the hand. The hand must be empty.
    - {{CLOTHING_LINE}}
    - DO NOT TRANSFER THE USER'S CLOTHES. Ignore the jacket/shirt from the input photo completely.
-2. FACE (CRITICAL - TODDLER VERSION):
-   - COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
-   - ACTION: REPLACE the toddler's original head with a "TODDLER-FIED" version of the User.
-   - CONCEPT: Apply a "Baby Filter" to the user's face.
-   - DETECTED USER FEATURES: {{USER_FEATURES}}
-   - CHANGES: Make the cheeks rounder, the jawline softer/smaller, and the eyes slightly larger/cuter.
-   - PRESERVE: You MUST keep the beard/mustache (if present), the smile lines, and the specific nose shape.
-   - GOAL: "Cute Toddler with a Beard" (Funny but adorable). Not a grumpy old man, not a generic baby.
-   - TEXTURE: keep it pencil sketch, but slightly smoother skin than a harsh adult portrait.
+2. FACE (CRITICAL):
+   {{TODDLER_INTENSITY_INSTRUCTIONS}}
 3. INTEGRATION: Seamlessly blend the head (user) onto the body (toddler). The neck connection must look natural.
 4. FINISH / SILKSCREEN FILTER (CRITICAL): Apply the exact serigraphy / silkscreen printing aesthetic shown in the "FINAL SILKSCREEN FILTER REFERENCE" image to the ENTIRE final drawing. Clean white background.`;
 
@@ -182,7 +175,7 @@ Return ONLY valid JSON, no markdown, no explanation. Example format:
 // ── Prompt version ────────────────────────────────────────────────────────────
 
 // Update this label whenever the prompt changes significantly
-export const PROMPT_VERSION = "v1";
+export const PROMPT_VERSION = "v3-dynamic-intensity";
 const MODEL_USED = "gemini-2.5-flash-image";
 
 export interface GenerationResult {
@@ -203,6 +196,7 @@ function delay(ms: number) {
 export async function transformToToddlerCaricature(
   imageBase64: string,
   apiKey?: string,
+  toddlerIntensity: number = 50,
 ): Promise<GenerationResult> {
   const keyToUse = apiKey || getApiKey();
 
@@ -234,14 +228,72 @@ export async function transformToToddlerCaricature(
     gender === "female" ? await fetchBodyReference("female") : styleReference;
   const finalFilterReference = await fetchFinalStyleReference();
 
-  // 3. Build the prompt — inject features + gender-appropriate clothing line
+  // 3. Prepare dynamic intensity instructions
+  // The 100% level matches the ORIGINAL prompt from commit 4e36b5b that
+  // the user loved — subtle toddler-fication, NOT extreme baby eyes.
+  let dynamicFaceInstruction = "";
+  if (toddlerIntensity >= 87.5) {
+    // 100% — ORIGINAL PROMPT (commit 4e36b5b). This is the gold standard.
+    dynamicFaceInstruction = `- COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
+   - ACTION: REPLACE the toddler's original head with a "TODDLER-FIED" version of the User.
+   - CONCEPT: Apply a "Baby Filter" to the user's face.
+   - DETECTED USER FEATURES: {{USER_FEATURES}}
+   - CHANGES: Make the cheeks rounder, the jawline softer/smaller, and the eyes slightly larger/cuter.
+   - PRESERVE: You MUST keep the beard/mustache (if present), the smile lines, and the specific nose shape.
+   - GOAL: "Cute Toddler with a Beard" (Funny but adorable). Not a grumpy old man, not a generic baby.
+   - TEXTURE: keep it pencil sketch, but slightly smoother skin than a harsh adult portrait.`;
+  } else if (toddlerIntensity >= 62.5) {
+    // 75% — Slightly less toddler, more adult proportions bleeding through
+    dynamicFaceInstruction = `- COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
+   - ACTION: REPLACE the toddler's original head with a slightly "TODDLER-FIED" version of the User.
+   - CONCEPT: Gentle baby filter — lean more toward the real person's likeness than toward a baby.
+   - DETECTED USER FEATURES: {{USER_FEATURES}}
+   - CHANGES: Only slightly round the cheeks and soften the jawline. Keep the eyes close to their natural size. The face should read as the person first, baby second.
+   - PRESERVE: You MUST keep the beard/mustache (if present), wrinkles, smile lines, the specific nose shape, and all defining character.
+   - GOAL: The person is clearly recognizable. A subtle youthful softness, not a baby transformation.
+   - TEXTURE: keep it pencil sketch, showing realistic skin texture and character.`;
+  } else if (toddlerIntensity >= 37.5) {
+    // 50% — Caricature with exaggerated features, minimal baby filter
+    dynamicFaceInstruction = `- COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
+   - ACTION: REPLACE the toddler's original head with a CARICATURE of the User's face.
+   - CONCEPT: Expressive caricature — exaggerate the user's defining features without infantilizing.
+   - DETECTED USER FEATURES: {{USER_FEATURES}}
+   - CHANGES: Exaggerate the user's most defining facial features (big nose stays big, strong chin stays strong). Do NOT round cheeks or enlarge eyes. Keep adult proportions.
+   - PRESERVE: Keep ALL mature features: wrinkles, beard/mustache, natural jawline, natural eye size. Strongly pronounce and emphasize them.
+   - PROPORTIONS: The head should be oversized compared to the small toddler body (bobblehead effect).
+   - TEXTURE: Keep it pencil sketch, showing realistic skin texture, strong contours, and character lines.`;
+  } else if (toddlerIntensity >= 12.5) {
+    // 25% — Strong adult likeness, just placed on the toddler body
+    dynamicFaceInstruction = `- COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
+   - ACTION: REPLACE the toddler's original head with a highly faithful portrait of the User's face.
+   - CONCEPT: Hyper-realistic adult face transfer — zero baby filter. Pure likeness.
+   - DETECTED USER FEATURES: {{USER_FEATURES}}
+   - CHANGES: DO NOT soften, round, or enlarge anything. Reproduce the face as-is with maximum fidelity to the source photo.
+   - PRESERVE: Preserve 100% of adult likeness, age markers, facial hair, jawline shape, eye size, and every characteristic.
+   - PROPORTIONS: The head should be oversized compared to the small toddler body.
+   - TEXTURE: Keep it pencil sketch, showing realistic skin texture, strong contours, and character lines.`;
+  } else {
+    // 0% — Direct transfer, proportional head
+    dynamicFaceInstruction = `- COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
+   - ACTION: Direct 1:1 face transfer onto the toddler body.
+   - CONCEPT: Exact adult likeness transfer with zero stylization.
+   - DETECTED USER FEATURES: {{USER_FEATURES}}
+   - CHANGES: ZERO styling on the face structure. Exact 1:1 adult likeness. Match the pencil sketch texture of the body. DO NOT round cheeks or enlarge eyes.
+   - PRESERVE: Preserve 100% of adult likeness, age markers, facial hair, jawline, and proportions.
+   - PROPORTIONS: Scale the head to fit the neck naturally. Do not make it a massive bobblehead. Keep it proportional or only slightly larger.
+   - TEXTURE: Match the pencil sketch texture.`;
+  }
+
+  // 4. Build the prompt
   const clothingLine =
     gender === "female" ? GIRL_CLOTHING_LINE : BOY_CLOTHING_LINE;
 
   const finalPrompt = REALISTIC_PENCIL_PROMPT.replace(
-    "{{USER_FEATURES}}",
-    userFeatures,
-  ).replace("{{CLOTHING_LINE}}", clothingLine);
+    "{{TODDLER_INTENSITY_INSTRUCTIONS}}",
+    dynamicFaceInstruction,
+  )
+    .replace("{{USER_FEATURES}}", userFeatures)
+    .replace("{{CLOTHING_LINE}}", clothingLine);
 
   const contents: Array<{
     text?: string;
