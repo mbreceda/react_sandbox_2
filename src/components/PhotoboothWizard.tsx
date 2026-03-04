@@ -3,18 +3,15 @@ import { PhotoCapture } from "./steps/PhotoCapture";
 import { TransformationStep } from "./steps/TransformationStep";
 import { ResultView } from "./steps/ResultView";
 import { GalleryView } from "./steps/GalleryView";
+import { SettingsView } from "./steps/SettingsView";
 import { useState } from "react";
 import "./PhotoboothWizard.css";
 
-const STEPS = [
-  { number: 1, label: "Foto" },
-  { number: 2, label: "Magia" },
-  { number: 3, label: "Resultado" },
-];
+type ActiveView = "wizard" | "gallery" | "settings";
 
 export function PhotoboothWizard() {
   const { currentStep } = useWizard();
-  const [showGallery, setShowGallery] = useState(false);
+  const [activeView, setActiveView] = useState<ActiveView>("wizard");
 
   const renderStep = () => {
     switch (currentStep) {
@@ -31,11 +28,6 @@ export function PhotoboothWizard() {
 
   return (
     <div className="photobooth-wizard">
-      {/* SVG Filter for Green Screen Removal */}
-
-      {/* Decorative dots - removed in CSS but keeping structure clean */}
-      {/* <div className="wizard-background-overlay" /> */}
-
       <header className="wizard-header">
         <h1 className="wizard-title">
           <span className="title-icon">
@@ -62,58 +54,43 @@ export function PhotoboothWizard() {
             className="title-logo"
           />
         </h1>
-        <button
-          className="gallery-nav-btn"
-          onClick={() => setShowGallery(!showGallery)}
-        >
-          {showGallery ? "Volver al Studio" : "Hall of Fame 🎨"}
-        </button>
-        {/* <p className="wizard-subtitle">
-          Transforma tu foto en una divertida caricatura
-        </p> */}
+        <div className="header-nav-icons">
+          <button
+            className={`nav-icon-btn ${activeView === "gallery" ? "active" : ""}`}
+            onClick={() => setActiveView(activeView === "gallery" ? "wizard" : "gallery")}
+            title="Hall of Fame"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+            </svg>
+          </button>
+          <button
+            className={`nav-icon-btn ${activeView === "settings" ? "active" : ""}`}
+            onClick={() => setActiveView(activeView === "settings" ? "wizard" : "settings")}
+            title="Ajustes"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+        </div>
       </header>
 
-      {/* <nav className="wizard-progress">
-        {STEPS.map((step) => (
-          <div
-            key={step.number}
-            className={`progress-step ${currentStep === step.number ? "active" : ""
-              } ${currentStep > step.number ? "completed" : ""}`}
-          >
-            <div className="progress-indicator">
-              {currentStep > step.number ? (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                >
-                  <polyline points="20,6 9,17 4,12" />
-                </svg>
-              ) : (
-                step.number
-              )}
-            </div>
-            <span className="progress-label">{step.label}</span>
-          </div>
-        ))}
-        <div className="progress-line">
-          <div
-            className="progress-line-fill"
-            style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
-          />
-        </div>
-      </nav> */}
-
       <main className="wizard-content">
-        {/* Hand Overlays - Moved inside to stick to the card */}
+        {/* Hand Overlays */}
         <div className="hand-overlay hand-left" />
         <div className="hand-overlay hand-right" />
 
         {/* Animated Step Container */}
-        <div key={showGallery ? 'gallery' : currentStep} className="step-transition">
-          {showGallery ? (
-            <GalleryView onBack={() => setShowGallery(false)} />
+        <div key={activeView === "wizard" ? currentStep : activeView} className="step-transition">
+          {activeView === "gallery" ? (
+            <GalleryView onBack={() => setActiveView("wizard")} />
+          ) : activeView === "settings" ? (
+            <SettingsView onBack={() => setActiveView("wizard")} />
           ) : (
             renderStep()
           )}

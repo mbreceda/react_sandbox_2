@@ -4,6 +4,7 @@ import { useWizard } from "../../context/WizardContext";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../../amplify/data/resource";
 import { StorageService } from "../../services/StorageService";
+import { useSettings } from "../../context/SettingsContext";
 import "./ResultView.css";
 
 const client = generateClient<Schema>();
@@ -30,6 +31,8 @@ export function ResultView() {
     reset,
     setCurrentStep,
   } = useWizard();
+
+  const { showFeedback } = useSettings();
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showHomeConfirm, setShowHomeConfirm] = useState(false);
@@ -255,8 +258,8 @@ export function ResultView() {
         </div>
       </div>
 
-      {/* ── FEEDBACK SECTION — hidden after submit ── */}
-      {!feedbackSaved && (
+      {/* ── FEEDBACK SECTION — hidden after submit or if disabled ── */}
+      {showFeedback && !feedbackSaved && (
         <div className="feedback-section">
           <p className="feedback-prompt">¿Qué te pareció el resultado?</p>
           <div className="feedback-rating-row">

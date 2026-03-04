@@ -5,6 +5,7 @@ import {
   getApiKey,
 } from "../../services/geminiService";
 import { ImageService } from "../../services/ImageService";
+import { useSettings } from "../../context/SettingsContext";
 import "./TransformationStep.css";
 
 export function TransformationStep() {
@@ -19,6 +20,8 @@ export function TransformationStep() {
     isProcessing,
     setIsProcessing,
   } = useWizard();
+
+  const { showIntensitySlider } = useSettings();
 
   const envApiKey = getApiKey();
   const [error, setError] = useState<string | null>(null);
@@ -127,44 +130,46 @@ export function TransformationStep() {
               />
             )}
 
-            <div className="intensity-slider-section">
-              <label htmlFor="toddler-slider">Nivel de Filtro</label>
-              <div className="slider-control">
-                <span className="slider-label">
-                  0%
-                  <br />
-                  <small>(Adulto)</small>
-                </span>
-                <input
-                  id="toddler-slider"
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="25"
-                  value={toddlerIntensity}
-                  onChange={(e) => setToddlerIntensity(Number(e.target.value))}
-                  disabled={isProcessing}
-                  className="toddler-slider"
-                />
-                <span className="slider-label">
-                  100%
-                  <br />
-                  <small>(Bebé)</small>
-                </span>
+            {showIntensitySlider && (
+              <div className="intensity-slider-section">
+                <label htmlFor="toddler-slider">Nivel de Filtro</label>
+                <div className="slider-control">
+                  <span className="slider-label">
+                    0%
+                    <br />
+                    <small>(Adulto)</small>
+                  </span>
+                  <input
+                    id="toddler-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="25"
+                    value={toddlerIntensity}
+                    onChange={(e) => setToddlerIntensity(Number(e.target.value))}
+                    disabled={isProcessing}
+                    className="toddler-slider"
+                  />
+                  <span className="slider-label">
+                    100%
+                    <br />
+                    <small>(Bebé)</small>
+                  </span>
+                </div>
+                <p className="intensity-description">
+                  {toddlerIntensity === 100 &&
+                    "Bebé original ✨ (Mofletes, ojitos tiernos — el que te gustó)."}
+                  {toddlerIntensity === 75 &&
+                    "Suave (Más parecido a la persona, toque juvenil sutil)."}
+                  {toddlerIntensity === 50 &&
+                    "Caricatura (Rasgos exagerados, sin filtro bebé)."}
+                  {toddlerIntensity === 25 &&
+                    "Adulto fiel (Likeness 1:1, sin suavizar nada)."}
+                  {toddlerIntensity === 0 &&
+                    "Transferencia directa (Cara exacta sobre el cuerpo)."}
+                </p>
               </div>
-              <p className="intensity-description">
-                {toddlerIntensity === 100 &&
-                  "Bebé original ✨ (Mofletes, ojitos tiernos — el que te gustó)."}
-                {toddlerIntensity === 75 &&
-                  "Suave (Más parecido a la persona, toque juvenil sutil)."}
-                {toddlerIntensity === 50 &&
-                  "Caricatura (Rasgos exagerados, sin filtro bebé)."}
-                {toddlerIntensity === 25 &&
-                  "Adulto fiel (Likeness 1:1, sin suavizar nada)."}
-                {toddlerIntensity === 0 &&
-                  "Transferencia directa (Cara exacta sobre el cuerpo)."}
-              </p>
-            </div>
+            )}
           </div>
         </div>
 
