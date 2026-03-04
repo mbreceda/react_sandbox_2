@@ -3,6 +3,7 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 export interface AppSettings {
   showIntensitySlider: boolean;
   showFeedback: boolean;
+  showWatermark: boolean;
 }
 
 interface SettingsContextType extends AppSettings {
@@ -14,6 +15,7 @@ const STORAGE_KEY = "photobooth_settings";
 const defaultSettings: AppSettings = {
   showIntensitySlider: true,
   showFeedback: true,
+  showWatermark: true,
 };
 
 function loadSettings(): AppSettings {

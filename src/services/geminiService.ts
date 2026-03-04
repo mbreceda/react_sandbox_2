@@ -31,7 +31,20 @@ INSTRUCTIONS:
 2. FACE (CRITICAL):
    {{TODDLER_INTENSITY_INSTRUCTIONS}}
 3. INTEGRATION: Seamlessly blend the head (user) onto the body (toddler). The neck connection must look natural.
-4. FINISH / SILKSCREEN FILTER (CRITICAL): Apply the exact serigraphy / silkscreen printing aesthetic shown in the "FINAL SILKSCREEN FILTER REFERENCE" image to the ENTIRE final drawing. Clean white background.`;
+4. FINISH / SILKSCREEN FILTER (CRITICAL):
+   Apply the exact serigraphy / silkscreen printing aesthetic shown in the "FINAL SILKSCREEN FILTER REFERENCE" image.
+   MANDATORY RULES FOR THE SILKSCREEN FILTER:
+   - NO SOFT SHADOWS. No gradients. No smooth shading. No pencil blending.
+   - Every area must be either PURE INK or PURE WHITE — nothing in between.
+   - Use FLAT, SOLID areas of black ink with HARD EDGES. Think Andy Warhol screen prints.
+   - Shadows = DISTINCT FLAT SHAPES of solid ink, NOT gradual darkening or soft gray tones.
+   - NO hatching, NO cross-hatching, NO stippling.
+   - Background: PURE WHITE, completely clean.
+   EXCEPTION FOR THE FACE (CRITICAL):
+   - The FACE must retain maximum recognizability even within the flat ink style.
+   - Use MORE contour lines on the face than on the body — nose shape, smile lines, jawline, eyebrow arch, eye shape must all be clearly defined with distinct ink lines.
+   - Facial likeness is EQUALLY important as the silkscreen aesthetic. Do NOT sacrifice recognizable features for the sake of simplification.
+   - The face should have the MOST detail in the entire drawing — it is the focal point.`;
 
 // Get API key from environment variable
 export function getApiKey(): string {
@@ -47,11 +60,11 @@ async function fetchBodyReference(
   const candidates =
     gender === "female"
       ? [
-          "/body-reference-girl.jpg",
-          "/body-reference-girl.jpeg",
-          "/body-reference-girl.png",
-          "/body-reference-boy.jpeg",
-        ]
+        "/body-reference-girl.jpg",
+        "/body-reference-girl.jpeg",
+        "/body-reference-girl.png",
+        "/body-reference-boy.jpeg",
+      ]
       : ["/body-reference-boy.jpeg", "/body-reference-boy.png"];
 
   for (const path of candidates) {
@@ -343,7 +356,7 @@ export async function transformToToddlerCaricature(
       },
     });
     contents.push({
-      text: "FINAL SILKSCREEN FILTER REFERENCE (CRITICAL: You MUST apply this serigraphy/silkscreen graphic effect to the ENTIRE final generated drawing. Mimic the bold ink textures and contrast.):",
+      text: "FINAL SILKSCREEN FILTER REFERENCE (CRITICAL: The final output MUST match this exact printing style — flat solid ink, hard edges, NO soft shadows or gradients. Only pure black ink on pure white paper. Copy this aesthetic exactly.):",
     });
   }
 

@@ -6,7 +6,7 @@ interface SettingsViewProps {
 }
 
 export function SettingsView({ onBack }: SettingsViewProps) {
-  const { showIntensitySlider, showFeedback, setSetting } = useSettings();
+  const { showIntensitySlider, showFeedback, showWatermark, setSetting } = useSettings();
 
   return (
     <div className="settings-view animate-in">
@@ -54,6 +54,24 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                 type="checkbox"
                 checked={showFeedback}
                 onChange={(e) => setSetting("showFeedback", e.target.checked)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div className="setting-item">
+            <div className="setting-info">
+              <span className="setting-icon">✍️</span>
+              <div>
+                <h3>Firma</h3>
+                <p>Agregar logo de Fred Breceda al resultado final</p>
+              </div>
+            </div>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={showWatermark}
+                onChange={(e) => setSetting("showWatermark", e.target.checked)}
               />
               <span className="toggle-slider"></span>
             </label>

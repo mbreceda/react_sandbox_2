@@ -198,6 +198,13 @@ export function PhotoCapture() {
               onChange={handleFileUpload}
               className="hidden-input"
             />
+
+            <img
+              src="/assets/clown-vector.png"
+              alt=""
+              className="capture-mascot"
+              aria-hidden="true"
+            />
           </div>
         )}
 

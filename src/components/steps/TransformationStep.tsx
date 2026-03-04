@@ -21,7 +21,7 @@ export function TransformationStep() {
     setIsProcessing,
   } = useWizard();
 
-  const { showIntensitySlider } = useSettings();
+  const { showIntensitySlider, showWatermark } = useSettings();
 
   const envApiKey = getApiKey();
   const [error, setError] = useState<string | null>(null);
@@ -78,11 +78,11 @@ export function TransformationStep() {
         toddlerIntensity,
       );
 
-      // Apply watermark before saving
-      const watermarkedResult = await ImageService.applyWatermark(
-        result.imageDataUrl,
-      );
-      setGeneratedImage(watermarkedResult);
+      // Apply watermark if enabled
+      const finalImage = showWatermark
+        ? await ImageService.applyWatermark(result.imageDataUrl)
+        : result.imageDataUrl;
+      setGeneratedImage(finalImage);
 
       // Store generation metadata in context for feedback
       setGenerationMetadata({
@@ -158,15 +158,15 @@ export function TransformationStep() {
                 </div>
                 <p className="intensity-description">
                   {toddlerIntensity === 100 &&
-                    "Bebé original ✨ (Mofletes, ojitos tiernos — el que te gustó)."}
+                    "Bebé original ✨ (Cachetones, ojitos tiernos — el que te latió)."}
                   {toddlerIntensity === 75 &&
                     "Suave (Más parecido a la persona, toque juvenil sutil)."}
                   {toddlerIntensity === 50 &&
                     "Caricatura (Rasgos exagerados, sin filtro bebé)."}
                   {toddlerIntensity === 25 &&
-                    "Adulto fiel (Likeness 1:1, sin suavizar nada)."}
+                    "Adulto fiel (Igualito, sin suavizar nada)."}
                   {toddlerIntensity === 0 &&
-                    "Transferencia directa (Cara exacta sobre el cuerpo)."}
+                    "Transferencia directa (Tu cara exacta sobre el cuerpo)."}
                 </p>
               </div>
             )}

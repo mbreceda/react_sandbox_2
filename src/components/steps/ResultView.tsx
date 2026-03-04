@@ -11,13 +11,13 @@ const client = generateClient<Schema>();
 
 const FEEDBACK_TAGS = [
   { id: "good_likeness", label: "¡Me reconocen! 😄" },
-  { id: "good_style", label: "Estilo perfecto 🎨" },
-  { id: "good_pose", label: "La pose mola 🤙" },
+  { id: "good_style", label: "Estilo chido 🎨" },
+  { id: "good_pose", label: "La pose quedó bien 🤙" },
   { id: "wrong_likeness", label: "No me parezco 🤔" },
   { id: "wrong_style", label: "Estilo incorrecto ✏️" },
   { id: "wrong_pose", label: "Pose incorrecta 🙅" },
   { id: "too_much_shading", label: "Mucha sombra 🌑" },
-  { id: "missing_features", label: "Falta algo 🧐" },
+  { id: "missing_features", label: "Le falta algo 🧐" },
 ];
 
 export function ResultView() {
@@ -261,7 +261,7 @@ export function ResultView() {
       {/* ── FEEDBACK SECTION — hidden after submit or if disabled ── */}
       {showFeedback && !feedbackSaved && (
         <div className="feedback-section">
-          <p className="feedback-prompt">¿Qué te pareció el resultado?</p>
+          <p className="feedback-prompt">¿Qué onda con el resultado?</p>
           <div className="feedback-rating-row">
             <button
               id="feedback-thumbs-up"
@@ -295,8 +295,8 @@ export function ResultView() {
           >
             <p className="feedback-modal-title">
               {rating === "thumbs_up"
-                ? "¡Me alegra! ¿Qué salió bien?"
-                : "Oh no 😅 ¿Qué falló?"}
+                ? "¡Qué chido! ¿Qué quedó bien?"
+                : "Uy 😅 ¿Qué salió mal?"}
             </p>
             <div className="feedback-tags">
               {FEEDBACK_TAGS.map((tag) => (
