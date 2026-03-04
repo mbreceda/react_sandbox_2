@@ -29,12 +29,12 @@ export function ResultView() {
     dbRecordId,
     setDbRecordId,
     reset,
+    regenerate,
     setCurrentStep,
   } = useWizard();
 
   const { showFeedback } = useSettings();
 
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showHomeConfirm, setShowHomeConfirm] = useState(false);
 
   // Feedback state
@@ -391,9 +391,9 @@ export function ResultView() {
         </button>
 
         <button
-          className="action-btn danger-btn icon-only-btn"
-          onClick={() => setShowResetConfirm(true)}
-          title="Borrador y Nuevo Intento"
+          className="action-btn primary-btn icon-only-btn"
+          onClick={regenerate}
+          title="Regenerar con la misma foto"
         >
           <svg
             viewBox="0 0 24 24"
@@ -409,31 +409,6 @@ export function ResultView() {
         </button>
       </div>
 
-      {showResetConfirm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>¿Nuevo Dibujo?</h3>
-            <p>Se perderá este retrato si no lo has guardado.</p>
-            <div className="modal-actions">
-              <button
-                className="action-btn secondary-btn"
-                onClick={() => setShowResetConfirm(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="action-btn danger-btn"
-                onClick={() => {
-                  setShowResetConfirm(false);
-                  setCurrentStep(2);
-                }}
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showHomeConfirm && (
         <div className="modal-overlay">

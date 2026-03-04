@@ -30,6 +30,7 @@ interface WizardContextType extends WizardState {
   // Convenience getter
   detectedGender: Gender | null;
   reset: () => void;
+  regenerate: () => void;
   goNext: () => void;
   goBack: () => void;
 }
@@ -81,6 +82,15 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 
   const reset = () => setState(initialState);
 
+  const regenerate = () =>
+    setState((prev) => ({
+      ...prev,
+      generatedImage: null,
+      generationMetadata: null,
+      dbRecordId: null,
+      currentStep: 2 as WizardStep,
+    }));
+
   const goNext = () =>
     setState((prev) => ({
       ...prev,
@@ -109,6 +119,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         // Derived convenience value so consumers don't need to dig into metadata
         detectedGender: state.generationMetadata?.detectedGender ?? null,
         reset,
+        regenerate,
         goNext,
         goBack,
       }}

@@ -31,15 +31,16 @@ export function TransformationStep() {
   useEffect(() => {
     if (isProcessing) {
       const phrases = [
-        "Afilando el lápiz...",
+        "Esto toma ~30 segundos, aguanta...",
+        "Afilando el lápiz... ✏️",
         "Buscando mi goma de borrar...",
-        "¡Qué perfil tan interesante!",
-        "Mmm... esa nariz es un reto...",
-        "Añadiendo un poco de magia...",
-        "¡No te muevas!",
-        "Capturando tu esencia (o intentándolo)...",
-        "Dibujando como Picasso en un mal día...",
-        "¡Casi termino! Solo falta el bigote...",
+        "¡Qué buen perfil! 😏",
+        "Esa nariz está cañona de dibujar...",
+        "Echándole una chispita de magia...",
+        "¡No te muevas! 📸",
+        "Capturando tu esencia (o eso intento)...",
+        "Dibujando como Picasso en lunes...",
+        "¡Ya mero! Solo falta el bigote... 🥸",
       ];
 
       let index = 0;
