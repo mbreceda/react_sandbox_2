@@ -7,39 +7,38 @@ const BOY_CLOTHING_LINE =
 const GIRL_CLOTHING_LINE =
   "CLOTHING (CRITICAL): YOU MUST USE THE REFERENCE CLOTHES (Sailor-collar gingham dress with bow, pleated skirt, white ankle socks, Mary Jane shoes).";
 
-const BW_SKETCH_PROMPT = `YOU ARE A BOLD, MINIMALIST VECTOR ILLUSTRATOR.
-OBJECTIVE: Create a unified flat-vector caricature. You will draw the user's likeness placed onto the provided toddler body. The final image MUST look like a clean, crisp, unified drawing.
+const REALISTIC_PENCIL_PROMPT = `YOU ARE A REALISTIC CARICATURE ARTIST.
+OBJECTIVE: Draw a HIGH-FIDELITY caricature of the user on the provided toddler body.
 
-OUTPUT STYLE (CRITICAL — STRICT MERCHANDISE VECTOR):
-- Aesthetic: Think bold vinyl sticker, Funko Pop, or minimalist retro comic book.
-- Line Art: THICK, UNIFORM, BOLD black outlines on every shape. No hairline strokes. No pencil texture.
-- Fill Colors: PURE WHITE (#FFFFFF), PURE BLACK (#000000), and MAXIMUM TWO flat solid grey tones.
-- ZERO gradients. ZERO shading. ZERO cross-hatching.
-- Consistency: The head MUST be drawn in the exact same simplified vector style as the toddler body reference. Do NOT draw a realistic head on a cartoon body.
+REFERENCE STYLE:
+- Style: Smooth Graphite Pencil Drawing (Realistic Shading).
+- Technique: Soft blending, detailed hair texture.
+- NOT Stippling/Dots. NOT Rough sketch.
 
-NEGATIVE PROMPT / STRICT DEFINITELY DO NOTS:
-- NO realistic hair. DO NOT draw individual strands of hair. Hair must be a solid graphic-novel style block of black or grey.
-- NO realistic stubble or beard hairs. Facial hair must be a solid flat shape.
-- NO realistic eyes or teeth. Simplify them into crisp cartoon shapes.
-- NO SIGNATURES. NO WATERMARKS. NO TEXT IN THE CORNERS. DO NOT SIGN THE DRAWING.
-- NO GLASSES (Unless explicit in input). NO SUNGLASSES. NO HATS. NO JEWELRY. NO PIERCINGS.
-- NO BACKGROUND.
+NEGATIVE PROMPT / RESTRICTIONS (STRICT):
+- NO GLASSES (Unless explicit in input).
+- NO SUNGLASSES.
+- NO HATS.
+- NO ADDITIONAL ACCESSORIES.
+- DO NOT CHANGE EYE COLOR.
 
 INSTRUCTIONS:
-1. BODY (STRICT):
-   - Pose & Style: You must exactly replicate the raised-hand toddler body and clothing provided in the Reference Image.
+1. BODY (STRICT): Use the EXACT body from the Reference, but modify the hand action:
+   - ACTION: The hand should be open or naturally raised. 
+   - STRICTLY NO ROPE: Do not draw any rope, string, or object in the hand. The hand must be empty.
    - {{CLOTHING_LINE}}
-2. FACE (CARICATURE LIKENESS, BUT AGGRESSIVELY SIMPLIFIED):
-   - Goal: Capture the user's likeness (eye shape, nose, distinct traits) but SIMPLIFY it into bold vector graphic shapes.
+   - DO NOT TRANSFER THE USER'S CLOTHES. Ignore the jacket/shirt from the input photo completely.
+2. FACE (CRITICAL - TODDLER VERSION):
+   - COMPOSITION RULE: The image must contain ONLY ONE PERSON (The Toddler Body + The User's Head).
+   - ACTION: REPLACE the toddler's original head with a "TODDLER-FIED" version of the User.
+   - CONCEPT: Apply a "Baby Filter" to the user's face.
    - DETECTED USER FEATURES: {{USER_FEATURES}}
-   - Rendering: Smooth out wrinkles. Simplify lips into solid flat shapes. Use pure white skin with strict black outlines.
-   - Hair & Beard Rule: You MUST group hair and facial hair into large, solid chunky shapes. Absolutely no fine lines or wisps.
-   - Proportions: Slightly enlarge the eyes and round the cheeks. It should be a stylized caricature, NOT a photorealistic portrait.
-3. INTEGRATION:
-   - Connect the head to the body with a visible neck. Keep the neck outline as thick as the body outline.
-4. FINISH (FINAL CHECK):
-   - Result must be entirely pure white background behind the character.
-   - CHECK AGAIN: Are there any signatures or text at the bottom or corners? IF YES, REMOVE THEM BEFORE OUTPUT.`;
+   - CHANGES: Make the cheeks rounder, the jawline softer/smaller, and the eyes slightly larger/cuter.
+   - PRESERVE: You MUST keep the beard/mustache (if present), the smile lines, and the specific nose shape.
+   - GOAL: "Cute Toddler with a Beard" (Funny but adorable). Not a grumpy old man, not a generic baby.
+   - TEXTURE: keep it pencil sketch, but slightly smoother skin than a harsh adult portrait.
+3. INTEGRATION: Seamlessly blend the head (user) onto the body (toddler). The neck connection must look natural.
+4. FINISH / SILKSCREEN FILTER (CRITICAL): Apply the exact serigraphy / silkscreen printing aesthetic shown in the "FINAL SILKSCREEN FILTER REFERENCE" image to the ENTIRE final drawing. Clean white background.`;
 
 // Get API key from environment variable
 export function getApiKey(): string {
@@ -48,11 +47,18 @@ export function getApiKey(): string {
 
 // ── Body reference loader ─────────────────────────────────────────────────────
 
-async function fetchBodyReference(gender: Gender): Promise<{ base64: string; mimeType: string }> {
+async function fetchBodyReference(
+  gender: Gender,
+): Promise<{ base64: string; mimeType: string }> {
   // Pick file based on detected gender; fall back to boy if girl file missing
   const candidates =
     gender === "female"
-      ? ["/body-reference-girl.jpg", "/body-reference-girl.jpeg", "/body-reference-girl.png", "/body-reference-boy.jpeg"]
+      ? [
+          "/body-reference-girl.jpg",
+          "/body-reference-girl.jpeg",
+          "/body-reference-girl.png",
+          "/body-reference-boy.jpeg",
+        ]
       : ["/body-reference-boy.jpeg", "/body-reference-boy.png"];
 
   for (const path of candidates) {
@@ -62,7 +68,10 @@ async function fetchBodyReference(gender: Gender): Promise<{ base64: string; mim
 
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.startsWith("image/")) {
-        console.warn(`Body reference at ${path} returned non-image content-type:`, contentType);
+        console.warn(
+          `Body reference at ${path} returned non-image content-type:`,
+          contentType,
+        );
         continue;
       }
 
@@ -70,13 +79,17 @@ async function fetchBodyReference(gender: Gender): Promise<{ base64: string; mim
       const base64 = await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () =>
-          resolve((reader.result as string).replace(/^data:image\/\w+;base64,/, ""));
+          resolve(
+            (reader.result as string).replace(/^data:image\/\w+;base64,/, ""),
+          );
         reader.readAsDataURL(blob);
       });
 
       // Use the actual mime type from the response (not assumed)
       const mimeType = contentType.split(";")[0].trim();
-      console.log(`Body reference loaded: ${path} (gender: ${gender}, type: ${mimeType})`);
+      console.log(
+        `Body reference loaded: ${path} (gender: ${gender}, type: ${mimeType})`,
+      );
       return { base64, mimeType };
     } catch {
       // try next candidate
@@ -85,6 +98,34 @@ async function fetchBodyReference(gender: Gender): Promise<{ base64: string; mim
 
   console.warn("Could not load any body reference image");
   return { base64: "", mimeType: "image/png" };
+}
+
+async function fetchFinalStyleReference(): Promise<{
+  base64: string;
+  mimeType: string;
+}> {
+  try {
+    const response = await fetch("/body-reference-final.png");
+    if (!response.ok) return { base64: "", mimeType: "image/png" };
+
+    const contentType = response.headers.get("content-type") || "";
+    const blob = await response.blob();
+    const base64 = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () =>
+        resolve(
+          (reader.result as string).replace(/^data:image\/\w+;base64,/, ""),
+        );
+      reader.readAsDataURL(blob);
+    });
+
+    const mimeType = contentType.split(";")[0].trim() || "image/png";
+    console.log(`Final style filter loaded (type: ${mimeType})`);
+    return { base64, mimeType };
+  } catch {
+    console.warn("Could not load final style reference image");
+    return { base64: "", mimeType: "image/png" };
+  }
 }
 
 // ── Facial analysis (features + gender in one call) ───────────────────────────
@@ -127,7 +168,9 @@ Return ONLY valid JSON, no markdown, no explanation. Example format:
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
     const gender: Gender =
-      parsed.gender === "male" || parsed.gender === "female" ? parsed.gender : "unknown";
+      parsed.gender === "male" || parsed.gender === "female"
+        ? parsed.gender
+        : "unknown";
     console.log(`Detected gender: ${gender}`);
     return { description: parsed.description || "Generic face", gender };
   } catch {
@@ -139,7 +182,7 @@ Return ONLY valid JSON, no markdown, no explanation. Example format:
 // ── Prompt version ────────────────────────────────────────────────────────────
 
 // Update this label whenever the prompt changes significantly
-export const PROMPT_VERSION = "v10-aggressive-vector-simplification";
+export const PROMPT_VERSION = "v1";
 const MODEL_USED = "gemini-2.5-flash-image";
 
 export interface GenerationResult {
@@ -187,15 +230,18 @@ export async function transformToToddlerCaricature(
 
   // 2. Fetch references — always fetch the boy to use as the master style standard
   const styleReference = await fetchBodyReference("male");
-  const bodyReference = gender === "female" ? await fetchBodyReference("female") : styleReference;
+  const bodyReference =
+    gender === "female" ? await fetchBodyReference("female") : styleReference;
+  const finalFilterReference = await fetchFinalStyleReference();
 
   // 3. Build the prompt — inject features + gender-appropriate clothing line
   const clothingLine =
     gender === "female" ? GIRL_CLOTHING_LINE : BOY_CLOTHING_LINE;
 
-  const finalPrompt = BW_SKETCH_PROMPT
-    .replace("{{USER_FEATURES}}", userFeatures)
-    .replace("{{CLOTHING_LINE}}", clothingLine);
+  const finalPrompt = REALISTIC_PENCIL_PROMPT.replace(
+    "{{USER_FEATURES}}",
+    userFeatures,
+  ).replace("{{CLOTHING_LINE}}", clothingLine);
 
   const contents: Array<{
     text?: string;
@@ -213,9 +259,13 @@ export async function transformToToddlerCaricature(
 
     // If it's a boy, the body and style are the same image
     if (gender === "male" || styleReference.base64 === bodyReference.base64) {
-      contents.push({ text: "MASTER STYLE & BODY TARGET REFERENCE (Replicate this exact flat style, shading, and pose):" });
+      contents.push({
+        text: "MASTER STYLE & BODY TARGET REFERENCE (Replicate this exact flat style, shading, and pose):",
+      });
     } else {
-      contents.push({ text: "MASTER STYLE REFERENCE (CRITICAL: You MUST use the exact flat vector style, pure white skin, and clean outlines shown here. Do not add cross-hatching or pencil shading. Match this rendering style perfectly):" });
+      contents.push({
+        text: "MASTER STYLE REFERENCE (CRITICAL: You MUST use the exact flat vector style, pure white skin, and clean outlines shown here. Do not add cross-hatching or pencil shading. Match this rendering style perfectly):",
+      });
 
       // Add the specific female body reference
       if (bodyReference.base64) {
@@ -225,9 +275,24 @@ export async function transformToToddlerCaricature(
             data: bodyReference.base64,
           },
         });
-        contents.push({ text: "BODY & CLOTHING TARGET (Replicate this exact pose and girl clothing, but draw it in the exact flat style of the MASTER STYLE REFERENCE above):" });
+        contents.push({
+          text: "BODY & CLOTHING TARGET (Replicate this exact pose and girl clothing, but draw it in the exact flat style of the MASTER STYLE REFERENCE above):",
+        });
       }
     }
+  }
+
+  // Add final filter reference
+  if (finalFilterReference.base64) {
+    contents.push({
+      inlineData: {
+        mimeType: finalFilterReference.mimeType,
+        data: finalFilterReference.base64,
+      },
+    });
+    contents.push({
+      text: "FINAL SILKSCREEN FILTER REFERENCE (CRITICAL: You MUST apply this serigraphy/silkscreen graphic effect to the ENTIRE final generated drawing. Mimic the bold ink textures and contrast.):",
+    });
   }
 
   // Add user photo last (face to transform)
@@ -267,7 +332,7 @@ export async function transformToToddlerCaricature(
 }
 
 export function getPromptForTransformation(): string {
-  return BW_SKETCH_PROMPT;
+  return REALISTIC_PENCIL_PROMPT;
 }
 
 // Legacy alias

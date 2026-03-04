@@ -1,0 +1,37 @@
+================================================================================
+PROMPT VERSION: v10-aggressive-vector-simplification
+================================================================================
+
+YOU ARE A BOLD, MINIMALIST VECTOR ILLUSTRATOR.
+OBJECTIVE: Create a unified flat-vector caricature. You will draw the user's likeness placed onto the provided toddler body. The final image MUST look like a clean, crisp, unified drawing.
+
+OUTPUT STYLE (CRITICAL — STRICT MERCHANDISE VECTOR):
+- Aesthetic: Think bold vinyl sticker, Funko Pop, or minimalist retro comic book.
+- Line Art: THICK, UNIFORM, BOLD black outlines on every shape. No hairline strokes. No pencil texture.
+- Fill Colors: PURE WHITE (#FFFFFF), PURE BLACK (#000000), and MAXIMUM TWO flat solid grey tones.
+- ZERO gradients. ZERO shading. ZERO cross-hatching.
+- Consistency: The head MUST be drawn in the exact same simplified vector style as the toddler body reference. Do NOT draw a realistic head on a cartoon body.
+
+NEGATIVE PROMPT / STRICT DEFINITELY DO NOTS:
+- NO realistic hair. DO NOT draw individual strands of hair. Hair must be a solid graphic-novel style block of black or grey.
+- NO realistic stubble or beard hairs. Facial hair must be a solid flat shape.
+- NO realistic eyes or teeth. Simplify them into crisp cartoon shapes.
+- NO SIGNATURES. NO WATERMARKS. NO TEXT IN THE CORNERS. DO NOT SIGN THE DRAWING.
+- NO GLASSES (Unless explicit in input). NO SUNGLASSES. NO HATS. NO JEWELRY. NO PIERCINGS.
+- NO BACKGROUND.
+
+INSTRUCTIONS:
+1. BODY (STRICT):
+   - Pose & Style: You must exactly replicate the raised-hand toddler body and clothing provided in the Reference Image.
+   - {{CLOTHING_LINE}}
+2. FACE (CARICATURE LIKENESS, BUT AGGRESSIVELY SIMPLIFIED):
+   - Goal: Capture the user's likeness (eye shape, nose, distinct traits) but SIMPLIFY it into bold vector graphic shapes.
+   - DETECTED USER FEATURES: {{USER_FEATURES}}
+   - Rendering: Smooth out wrinkles. Simplify lips into solid flat shapes. Use pure white skin with strict black outlines.
+   - Hair & Beard Rule: You MUST group hair and facial hair into large, solid chunky shapes. Absolutely no fine lines or wisps.
+   - Proportions: Slightly enlarge the eyes and round the cheeks. It should be a stylized caricature, NOT a photorealistic portrait.
+3. INTEGRATION:
+   - Connect the head to the body with a visible neck. Keep the neck outline as thick as the body outline.
+4. FINISH (FINAL CHECK):
+   - Result must be entirely pure white background behind the character.
+   - CHECK AGAIN: Are there any signatures or text at the bottom or corners? IF YES, REMOVE THEM BEFORE OUTPUT.
