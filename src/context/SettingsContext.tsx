@@ -4,6 +4,7 @@ export interface AppSettings {
   showIntensitySlider: boolean;
   showFeedback: boolean;
   showWatermark: boolean;
+  applySilkscreenFilter: boolean;
 }
 
 interface SettingsContextType extends AppSettings {
@@ -16,6 +17,7 @@ const defaultSettings: AppSettings = {
   showIntensitySlider: true,
   showFeedback: true,
   showWatermark: true,
+  applySilkscreenFilter: true,
 };
 
 function loadSettings(): AppSettings {

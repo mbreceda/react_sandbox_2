@@ -106,6 +106,33 @@ async function fetchBodyReference(
   return { base64: "", mimeType: "image/png" };
 }
 
+async function fetchSingleReference(
+  path: string,
+): Promise<{ base64: string; mimeType: string }> {
+  try {
+    const response = await fetch(path);
+    if (!response.ok) return { base64: "", mimeType: "image/png" };
+
+    const contentType = response.headers.get("content-type") || "";
+    const blob = await response.blob();
+    const base64 = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () =>
+        resolve(
+          (reader.result as string).replace(/^data:image\/\w+;base64,/, ""),
+        );
+      reader.readAsDataURL(blob);
+    });
+
+    const mimeType = contentType.split(";")[0].trim() || "image/png";
+    console.log(`Reference loaded: ${path} (type: ${mimeType})`);
+    return { base64, mimeType };
+  } catch {
+    console.warn(`Could not load reference: ${path}`);
+    return { base64: "", mimeType: "image/png" };
+  }
+}
+
 async function fetchFinalStyleReference(): Promise<{
   base64: string;
   mimeType: string;
@@ -210,6 +237,7 @@ export async function transformToToddlerCaricature(
   imageBase64: string,
   apiKey?: string,
   toddlerIntensity: number = 50,
+  applySilkscreenFilter: boolean = true,
 ): Promise<GenerationResult> {
   const keyToUse = apiKey || getApiKey();
 
@@ -235,11 +263,16 @@ export async function transformToToddlerCaricature(
   // Wait to avoid hitting rate limits (429)
   await delay(1500);
 
-  // 2. Fetch references — always fetch the boy to use as the master style standard
-  const styleReference = await fetchBodyReference("male");
+  // 2. Fetch references
+  // When silkscreen filter is OFF, use the pencil-style body reference instead
+  const styleReference = applySilkscreenFilter
+    ? await fetchBodyReference("male")
+    : await fetchSingleReference("/body-reference-pencil.png");
   const bodyReference =
     gender === "female" ? await fetchBodyReference("female") : styleReference;
-  const finalFilterReference = await fetchFinalStyleReference();
+  const finalFilterReference = applySilkscreenFilter
+    ? await fetchFinalStyleReference()
+    : { base64: "", mimeType: "image/png" };
 
   // 3. Prepare dynamic intensity instructions
   // The 100% level matches the ORIGINAL prompt from commit 4e36b5b that
@@ -297,11 +330,24 @@ export async function transformToToddlerCaricature(
    - TEXTURE: Match the pencil sketch texture.`;
   }
 
-  // 4. Build the prompt
+  // 4. Build the prompt — strip silkscreen step if filter is off
   const clothingLine =
     gender === "female" ? GIRL_CLOTHING_LINE : BOY_CLOTHING_LINE;
 
-  const finalPrompt = REALISTIC_PENCIL_PROMPT.replace(
+  let prompt = REALISTIC_PENCIL_PROMPT;
+  if (!applySilkscreenFilter) {
+    // Remove everything from step 4 onward
+    prompt = prompt.replace(/\n4\. FINISH \/ SILKSCREEN FILTER[\s\S]*$/, "");
+    // Add a new step 4 for pencil realism that prioritizes face likeness 100%
+    prompt += `\n4. FINISH / PENCIL REALISM (CRITICAL):
+   - FACIAL LIKENESS IS THE #1 PRIORITY. The person MUST be 100% instantly recognizable.
+   - Study the source photo carefully: reproduce the EXACT nose shape, eye spacing, eyebrow arch, lip shape, jawline, and hairline.
+   - Maintain the "Smooth Graphite Pencil Drawing" style from the body reference, full shading and blending allowed.
+   - The face should have the HIGHEST level of detail in the entire drawing.
+   - Background: completely clean white paper.`;
+  }
+
+  const finalPrompt = prompt.replace(
     "{{TODDLER_INTENSITY_INSTRUCTIONS}}",
     dynamicFaceInstruction,
   )

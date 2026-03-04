@@ -6,7 +6,7 @@ interface SettingsViewProps {
 }
 
 export function SettingsView({ onBack }: SettingsViewProps) {
-  const { showIntensitySlider, showFeedback, showWatermark, setSetting } = useSettings();
+  const { showIntensitySlider, showFeedback, showWatermark, applySilkscreenFilter, setSetting } = useSettings();
 
   return (
     <div className="settings-view animate-in">
@@ -72,6 +72,24 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                 type="checkbox"
                 checked={showWatermark}
                 onChange={(e) => setSetting("showWatermark", e.target.checked)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div className="setting-item">
+            <div className="setting-info">
+              <span className="setting-icon">🎨</span>
+              <div>
+                <h3>Filtro Serigrafía</h3>
+                <p>Aplicar efecto de impresión silkscreen al resultado</p>
+              </div>
+            </div>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={applySilkscreenFilter}
+                onChange={(e) => setSetting("applySilkscreenFilter", e.target.checked)}
               />
               <span className="toggle-slider"></span>
             </label>

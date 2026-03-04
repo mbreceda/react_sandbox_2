@@ -21,7 +21,7 @@ export function TransformationStep() {
     setIsProcessing,
   } = useWizard();
 
-  const { showIntensitySlider, showWatermark } = useSettings();
+  const { showIntensitySlider, showWatermark, applySilkscreenFilter } = useSettings();
 
   const envApiKey = getApiKey();
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +77,7 @@ export function TransformationStep() {
         originalImage,
         keyToUse,
         toddlerIntensity,
+        applySilkscreenFilter,
       );
 
       // Apply watermark if enabled
