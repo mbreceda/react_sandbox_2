@@ -484,43 +484,199 @@
 /* MOBILE RESPONSIVE  */
 /* ================== */
 
+/* ============================== */
+/* MOBILE RESPONSIVE (Refined)    */
+/* Instagram-inspired: thin,      */
+/* light, non-invasive            */
+/* ============================== */
+
 @media (max-width: 768px) {
+
+  /* ── Override CSS variables for mobile ── */
+  :root {
+    --border-sketch: 2px solid #000000;
+    --shadow-sketch: 2px 2px 0px rgba(0, 0, 0, 0.15);
+    --border-radius-sketch: 6px;
+  }
+
   .photobooth-wizard {
-    padding: 1rem;
+    padding: 0.75rem;
     height: auto;
-    /* Remove fixed height */
     min-height: 100vh;
+    min-height: 100dvh;
     overflow: visible;
-    /* Allow page scroll */
   }
 
   .hand-overlay {
     display: none !important;
-    /* Force hide decorative hands on mobile - they block content */
   }
 
+  /* ── Header: compact, centered ── */
   .wizard-header {
     margin-bottom: 0.5rem;
   }
 
-
   .wizard-title {
-    font-size: 1.75rem;
+    font-size: 1.1rem;
+    gap: 0.4rem !important;
+    letter-spacing: 0;
   }
 
   .title-icon svg {
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .title-text-container {
+    font-size: 0.85rem;
+    gap: 0.3rem !important;
+  }
+
+  .title-logo {
+    height: 0.9rem;
   }
 
   .wizard-subtitle {
-    font-size: 0.9rem;
-    padding: 0 1rem;
+    font-size: 0.8rem;
+    padding: 0;
   }
 
+  /* ── Nav icon buttons: smaller, lighter ── */
+  .header-nav-icons {
+    gap: 0.75rem;
+    margin-top: 0.35rem;
+  }
+
+  .nav-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-width: 2px;
+    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15);
+  }
+
+  .nav-icon-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ── Content card: edge-to-edge, thin border ── */
+  .wizard-content {
+    padding: 0.75rem;
+    padding-top: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wizard-content::before {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border-width: 1.5px;
+    border-radius: 10px;
+  }
+
+  /* ── Step header: minimal, title-only ── */
+  .step-header {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #eee;
+    gap: 0.5rem;
+  }
+
+  .step-number {
+    display: none;
+  }
+
+  .step-info h2 {
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    color: #222;
+  }
+
+  .step-info p {
+    font-size: 0.75rem;
+    color: #999;
+    margin: 0;
+  }
+
+  /* ── Action buttons: refined ── */
+  .step-actions {
+    gap: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .action-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    min-height: 40px;
+    min-width: unset;
+    border-width: 1.5px;
+    box-shadow: none;
+    border-radius: 10px;
+    border-color: #ddd;
+    color: #333;
+  }
+
+  .action-btn:not(.icon-only-btn) {
+    flex: 1;
+  }
+
+  /* ── Primary buttons: filled black ── */
+  .action-btn.primary-btn {
+    background: #111;
+    color: white;
+    border-color: #111;
+  }
+
+  .action-btn.primary-btn svg {
+    stroke: white;
+  }
+
+  /* ── Secondary / back buttons: ghost (no border) ── */
+  .action-btn.secondary-btn.icon-only-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #999;
+  }
+
+  .action-btn.secondary-btn.icon-only-btn svg {
+    stroke: #999;
+  }
+
+  /* ── Danger buttons: subtle red ── */
+  .action-btn.danger-btn {
+    background: transparent;
+    border-color: #e0e0e0;
+    color: #cc3333;
+  }
+
+  .action-btn.danger-btn svg {
+    stroke: #cc3333;
+  }
+
+  /* ── Icon buttons: rounded rectangles ── */
+  .icon-only-btn {
+    flex: none;
+    width: auto !important;
+    height: 40px !important;
+    padding: 0 1rem !important;
+    border-width: 1.5px;
+    box-shadow: none;
+    border-color: #ddd;
+    border-radius: 10px !important;
+  }
+
+  .icon-only-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ── Progress indicators ── */
   .wizard-progress {
-    margin-bottom: 1rem;
-    /* Reduced margin */
+    margin-bottom: 0.75rem;
     gap: 0.5rem;
   }
 
@@ -529,87 +685,68 @@
   }
 
   .progress-indicator {
-    width: 32px;
-    /* Smaller circle */
-    height: 32px;
-    font-size: 0.9rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
     border-width: 2px;
-    box-shadow: 2px 2px 0px black;
+    box-shadow: none;
   }
 
   .progress-step.active .progress-indicator {
-    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
   }
 
   .progress-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     display: none;
-    /* Hide labels on very small screens if needed, or keep */
   }
 
   .progress-line {
-    top: 18px;
-    /* Adjusted for smaller indicator */
+    top: 16px;
+    height: 2px;
   }
 
-  .wizard-content {
-    padding: 0.5rem;
-    padding-top: 1rem;
-    width: 100%;
-    max-width: 100%;
-    /* Maximize space */
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  /* ── Mobile hover: keep color backgrounds, white icons ── */
+  .action-btn:hover:not(:disabled),
+  .action-btn:active:not(:disabled) {
+    transform: none !important;
+    box-shadow: none !important;
   }
 
-  .wizard-content::before {
-    /* Simpler card on mobile */
-    box-shadow: 4px 4px 0px black;
+  .primary-btn:hover:not(:disabled),
+  .primary-btn:active:not(:disabled) {
+    background: var(--hover-blue) !important;
+    color: white !important;
+    border-color: var(--hover-blue) !important;
   }
 
-  .step-header {
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom-width: 3px;
+  .primary-btn:hover:not(:disabled) svg,
+  .primary-btn:active:not(:disabled) svg {
+    stroke: white !important;
   }
 
-  .step-number {
-    width: 40px;
-    height: 40px;
-    font-size: 1.25rem;
-    border-width: 2px;
-    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  .secondary-btn:hover:not(:disabled),
+  .secondary-btn:active:not(:disabled) {
+    background: var(--hover-red) !important;
+    color: white !important;
+    border-color: var(--hover-red) !important;
   }
 
-  .step-info h2 {
-    font-size: 1.25rem;
+  .secondary-btn:hover:not(:disabled) svg,
+  .secondary-btn:active:not(:disabled) svg {
+    stroke: white !important;
   }
 
-  .step-info p {
-    font-size: 0.9rem;
+  .danger-btn:hover:not(:disabled),
+  .danger-btn:active:not(:disabled) {
+    background: #cc3333 !important;
+    color: white !important;
+    border-color: #cc3333 !important;
   }
 
-  .step-actions {
-    gap: 1rem;
-    padding-top: 1rem;
-  }
-
-  .action-btn {
-    padding: 1rem;
-    font-size: 1rem;
-    min-height: 56px;
-    min-width: unset;
-    box-shadow: 4px 4px 0px black;
-  }
-
-  .action-btn:not(.icon-only-btn) {
-    flex: 1;
-    /* Equal width buttons */
-  }
-
-  .icon-only-btn {
-    flex: none;
+  .danger-btn:hover:not(:disabled) svg,
+  .danger-btn:active:not(:disabled) svg {
+    stroke: white !important;
   }
 }
 
