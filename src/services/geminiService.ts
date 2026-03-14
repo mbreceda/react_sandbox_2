@@ -9,6 +9,7 @@ const GIRL_CLOTHING_LINE =
 
 const REALISTIC_PENCIL_PROMPT = `YOU ARE A REALISTIC CARICATURE ARTIST.
 OBJECTIVE: Draw a HIGH-FIDELITY caricature of the user on the provided toddler body.
+CRITICAL CONSTRAINT: YOU MUST NOT CROP THE HEAD OR FEET. Leave empty white space at the top and bottom of the canvas. Keep the full character completely in frame.
 
 REFERENCE STYLE:
 - Style: Smooth Graphite Pencil Drawing (Realistic Shading).
@@ -16,6 +17,8 @@ REFERENCE STYLE:
 - NOT Stippling/Dots. NOT Rough sketch.
 
 NEGATIVE PROMPT / RESTRICTIONS (STRICT):
+- NO CROPPING. Do not crop the top of the head/hair or the bottom of the feet. Use a zoomed-out composition.
+- NO ZOOMING IN. Keep the full body in frame.
 - NO GLASSES (Unless explicit in input).
 - NO SUNGLASSES.
 - NO HATS.
@@ -23,9 +26,16 @@ NEGATIVE PROMPT / RESTRICTIONS (STRICT):
 - DO NOT CHANGE EYE COLOR.
 
 INSTRUCTIONS:
+0. COMPOSITION & FRAMING (CRITICAL / OVERRIDE EVERYTHING ELSE):
+   - You MUST draw the entire character zoomed out and miniaturized in the center of the canvas.
+   - The character (including the oversized head and feet) must occupy ONLY the middle 50% of the canvas.
+   - You MUST leave at least 25% of the canvas as pure empty white space ABOVE the character's head.
+   - You MUST leave at least 25% of the canvas as pure empty white space BELOW the character's shoes.
+   - If you cut off the hair or shoes, the generation is a failure. Draw them smaller!
 1. BODY (STRICT): Use the EXACT body from the Reference, but modify the hand action:
    - ACTION: The hand should be open or naturally raised. 
    - STRICTLY NO ROPE: Do not draw any rope, string, or object in the hand. The hand must be empty.
+   - PADDING & CROPPING (CRITICAL): Do NOT crop the character. Ensure the ENTIRE body, from the very top of the head/hair to the bottom of the feet/shoes, is fully visible. Leave generous white margins on all sides.
    - {{CLOTHING_LINE}}
    - DO NOT TRANSFER THE USER'S CLOTHES. Ignore the jacket/shirt from the input photo completely.
 2. FACE (CRITICAL):
@@ -60,11 +70,11 @@ async function fetchBodyReference(
   const candidates =
     gender === "female"
       ? [
-        "/body-reference-girl.jpg",
-        "/body-reference-girl.jpeg",
-        "/body-reference-girl.png",
-        "/body-reference-boy.jpeg",
-      ]
+          "/body-reference-girl.jpg",
+          "/body-reference-girl.jpeg",
+          "/body-reference-girl.png",
+          "/body-reference-boy.jpeg",
+        ]
       : ["/body-reference-boy.jpeg", "/body-reference-boy.png"];
 
   for (const path of candidates) {
@@ -306,7 +316,7 @@ export async function transformToToddlerCaricature(
    - DETECTED USER FEATURES: {{USER_FEATURES}}
    - CHANGES: Exaggerate the user's most defining facial features (big nose stays big, strong chin stays strong). Do NOT round cheeks or enlarge eyes. Keep adult proportions.
    - PRESERVE: Keep ALL mature features: wrinkles, beard/mustache, natural jawline, natural eye size. Strongly pronounce and emphasize them.
-   - PROPORTIONS: The head should be oversized compared to the small toddler body (bobblehead effect).
+   - PROPORTIONS: The head should be oversized compared to the small toddler body (bobblehead effect). **CRITICAL:** Scale down the entire character so the large head does not get cropped out of the frame.
    - TEXTURE: Keep it pencil sketch, showing realistic skin texture, strong contours, and character lines.`;
   } else if (toddlerIntensity >= 12.5) {
     // 25% — Strong adult likeness, just placed on the toddler body
@@ -344,13 +354,14 @@ export async function transformToToddlerCaricature(
    - Study the source photo carefully: reproduce the EXACT nose shape, eye spacing, eyebrow arch, lip shape, jawline, and hairline.
    - Maintain the "Smooth Graphite Pencil Drawing" style from the body reference, full shading and blending allowed.
    - The face should have the HIGHEST level of detail in the entire drawing.
-   - Background: completely clean white paper.`;
+   - Background: completely clean white paper. Ensure a thick white border around the character so NO PART of the drawing touches the edge of the screen.`;
   }
 
-  const finalPrompt = prompt.replace(
-    "{{TODDLER_INTENSITY_INSTRUCTIONS}}",
-    dynamicFaceInstruction,
-  )
+  // Forcefully append global framing rule again to the end of every prompt to make sure it's the last thing the model reads.
+  prompt += `\n\nFINAL CRITICAL CHECK: Look at the edges of the canvas. You must leave a huge amount of empty white paper above the head and below the shoes. Shrink the character drastically so they look tiny on the page. NO CROPPING ALLOWED!`;
+
+  const finalPrompt = prompt
+    .replace("{{TODDLER_INTENSITY_INSTRUCTIONS}}", dynamicFaceInstruction)
     .replace("{{USER_FEATURES}}", userFeatures)
     .replace("{{CLOTHING_LINE}}", clothingLine);
 
@@ -420,6 +431,9 @@ export async function transformToToddlerCaricature(
     contents,
     config: {
       responseModalities: ["Text", "Image"],
+      imageConfig: {
+        aspectRatio: "9:16",
+      },
     },
   });
 

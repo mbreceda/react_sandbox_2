@@ -24,20 +24,28 @@ export const ImageService = {
             return;
           }
 
-          // Set canvas size to image size
-          canvas.width = img.width;
-          canvas.height = img.height;
+          // Add 15% padding as a permanent white frame (passepartout)
+          const paddingX = img.width * 0.15;
+          const paddingY = img.height * 0.15;
 
-          // Draw original image
-          ctx.drawImage(img, 0, 0);
+          // Set canvas size to image size + padding
+          canvas.width = img.width + paddingX * 2;
+          canvas.height = img.height + paddingY * 2;
+
+          // Fill canvas background with perfect white
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Draw original image centered
+          ctx.drawImage(img, paddingX, paddingY, img.width, img.height);
 
           // Calculate logo size (e.g., 20% of image width)
           const logoScale = 0.25;
           const logoWidth = img.width * logoScale;
           const logoHeight = (logo.height / logo.width) * logoWidth;
 
-          // Calculate position (bottom right with 5% margin)
-          const marginLeftRight = img.width * 0.05;
+          // Calculate position (bottom right with less margin to push it to the right)
+          const marginLeftRight = img.width * 0.02;
           const marginBottom = img.height * 0.05;
           const x = canvas.width - logoWidth - marginLeftRight;
           const y = canvas.height - logoHeight - marginBottom;

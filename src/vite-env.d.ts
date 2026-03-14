@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 
 declare module "*/amplify_outputs.json" {
-  const value: any;
+  const value: Record<string, unknown>;
   export default value;
 }
+
+declare module "imagetracerjs";
