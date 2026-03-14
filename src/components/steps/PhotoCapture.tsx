@@ -10,7 +10,7 @@ export function PhotoCapture() {
 
   // Stages
   const [imageSrc, setImageSrc] = useState<string | null>(null); // Raw input
-  const [preview, setPreview] = useState<string | null>(null);   // Final cropped
+  const [preview, setPreview] = useState<string | null>(null); // Final cropped
 
   // Camera state
   const [isCamera, setIsCamera] = useState(false);
@@ -27,16 +27,17 @@ export function PhotoCapture() {
   // Go to bottom of page
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
-    containerRef.current?.scrollTo({
-      top: containerRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+    if (typeof containerRef.current?.scrollTo === "function") {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   };
 
   useEffect(() => {
     scrollToBottom();
   }, []);
-
 
   // Assign stream to video element when both are ready
   useEffect(() => {
@@ -59,7 +60,7 @@ export function PhotoCapture() {
 
   const startCamera = async () => {
     try {
-      // Prioritize environment facing mode for back camera on mobile if needed, 
+      // Prioritize environment facing mode for back camera on mobile if needed,
       // but 'user' is good for selfies.
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: 1280, height: 720 }, // Higher res for crop
@@ -105,9 +106,12 @@ export function PhotoCapture() {
     setIsCamera(false);
   }, [stream]);
 
-  const onCropComplete = useCallback((_formattedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
+  const onCropComplete = useCallback(
+    (_formattedArea: Area, croppedAreaPixels: Area) => {
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
+    [],
+  );
 
   const showCroppedImage = useCallback(async () => {
     if (imageSrc && croppedAreaPixels) {
@@ -115,7 +119,7 @@ export function PhotoCapture() {
         const croppedImage = await getCroppedImg(
           imageSrc,
           croppedAreaPixels,
-          0
+          0,
         );
         setPreview(croppedImage);
         setImageSrc(null); // Hide cropper, show preview/confirm
@@ -265,10 +269,16 @@ export function PhotoCapture() {
                 <span>+</span>
               </div>
               <div className="cropper-actions">
-                <button className="action-btn secondary-btn" onClick={handleCancelCrop}>
+                <button
+                  className="action-btn secondary-btn"
+                  onClick={handleCancelCrop}
+                >
                   Cancelar
                 </button>
-                <button className="action-btn primary-btn" onClick={showCroppedImage}>
+                <button
+                  className="action-btn primary-btn"
+                  onClick={showCroppedImage}
+                >
                   Recortar y Usar
                 </button>
               </div>
